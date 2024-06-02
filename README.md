@@ -1,10 +1,7 @@
 Modeling Semantic Plausibility Project
-
 Data Analysis:
-
 Dataset: Pep3K
 15 features to be analyzed:
-
 Basic features of data:
 1. size of dataset
 2. balance of dataset, how many data instances are labeled plausible versus implausible
