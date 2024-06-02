@@ -14,19 +14,19 @@ Basic features of data:
 4. vocab in dataset
 5. word count and token frequency
 6. average word length
-7.
+   
 Linguistic Characteristics:
 
-9. Part-of-Speech tag distribution
-10. relation between subjects being animate/inanimate and their labels
-11. relation between objects being animate/inanimate and their labels
-12. how many times words appear in the dataset as subject or object and their corresponding labels
-13. 
+7. Part-of-Speech tag distribution
+8. relation between subjects being animate/inanimate and their labels
+9. relation between objects being animate/inanimate and their labels
+10. how many times words appear in the dataset as subject or object and their corresponding labels
+11. 
 (Dis)agreement in annotation:
 
-14. each annotate selection of dataset and see if we agree with the labeled annotations
-15. 
+12. each annotate selection of dataset and see if we agree with the labeled annotations
+13. 
 Relationships across data splits:
 
-16. compare basic features of data across test, train, and dev
-17.
+14. compare basic features of data across test, train, and dev
+15.
