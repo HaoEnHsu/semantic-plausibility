@@ -26,7 +26,8 @@ def analyze_concreteness(vocabulary): #wordnet is lexical database with words gr
     for word in vocabulary:
         synsets = wn.synsets(word) # synsets means sets of cognitive synonyms, retrieves them for given word
         if synsets:
-            # Check if any synset of the word is an adjective, if it is, is assumed to be abstract, vast oversimplification, going to work on that
+            # Check if any synset of the word is an adjective, if it is, is assumed to be abstract, vast oversimplification
+            # however, looking at the dataset, it IS almost impossible to find an abstract word, so I'm not sure how to target the abstract words that are there
             is_abstract = any('a' in s.pos() for s in synsets)
             if is_abstract:
                 abstract_count += 1
