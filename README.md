@@ -28,3 +28,5 @@ Linguistic Characteristics:
 
 14. compare basic features of data across test, train, and dev
 15.
+
+16.
