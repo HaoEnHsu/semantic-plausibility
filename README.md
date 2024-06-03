@@ -27,6 +27,11 @@ Linguistic Characteristics:
 13. Relationships across data splits:
 
 14. compare basic features of data across test, train, and dev
-15.
+15. object-verb relationship (dependency parsing, spaCy)
+16. word concreteness (wordnet, NLTK)
+17. co-occurrence/collocation (compared to large dataset)
+18. action affordance (spaCy)
+19. commonsense knowledge (python package, conceptnet)
+20. n-grams
 
 16.
