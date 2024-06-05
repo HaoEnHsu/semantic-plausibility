@@ -79,28 +79,6 @@ Advanced features of data:
     - library/packages used: pandas, nltk, matplotlib
     - intuition: if some n-grams (bigram and trigram here) occur frequently in a corpus, it is much more likely to be plausible
     - corpus used: brown (W. N. Francis and H. Kucera [1964]) from NLTK (http://www.hit.uib.no/icame/brown/bcm.html)
-    - collocation:
-Bigram         Dataset Freq   Brown Corpus Freq
-('open', 'door')        4       7
-('open', 'window')      4       5
-('cool', 'air')         2       2
-('cool', 'water')       3       2
-('warm', 'water')       2       2
-('plane', 'crash')      1       2
-('open', 'bottle')      2       1
-('clean', 'slate')      1       1
-('drink', 'water')      1       1
-('sun', 'heat')         2       1
-('drink', 'beer')       3       1
-('cook', 'stove')       1       1
-('air', 'cool')         2       1
-('clean', 'house')      3       1
-('oil', 'heat')         2       1
-('horse', 'kick')       3       1
-('pour', 'water')       2       1
-('dog', 'shake')        3       0
-('shake', 'cat')        1       0
-('student', 'climb')    2       0
 
 
 11. Part-of-Speech tag distribution.
