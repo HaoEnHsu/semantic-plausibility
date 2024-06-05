@@ -13,35 +13,36 @@ To Start:
 1. Size of dataset.
 
    - simply run the file, and output prints to terminal. Dataset is not that big.
-
-   Number of data instances in train: 2449
-   Number of data instances in testing data: 307
-   Number of data instances in validation data: 306
+     Number of data instances in train: 2449
+     Number of data instances in testing data: 307
+     Number of data instances in validation data: 306
 
 2. Label balance of dataset, how many data instances are labeled plausible versus implausible.
    - see terminal outputs numbers and generated bar chart. The data is balanced.
-     Train label counts:
-     {0: 1227, 1: 1222}
-     Test label counts:
-     {0: 154, 1: 153}
-     Validation label counts:
-     {0: 153, 1: 153}
-3. Number of items in each data instance.
+
+   Train label counts:
+    {0: 1227, 1: 1222}
+    Test label counts:
+    {0: 154, 1: 153}
+    Validation label counts:
+    {0: 153, 1: 153}
+   
+4. Number of items in each data instance.
    - see terminal output and generated bar chart. Each data instance has 3 words.
      {3: 2449}
-4. Vocabulary in dataset.
+5. Vocabulary in dataset.
    - see terminal output, the total number of unique terms in the dataset is smaller than we expected.
      Number of unique terms in the train dataset: 561
      Number of unique terms in the test dataset: 315
      Number of unique terms in the dev dataset: 330
-5. Word count and token frequency.
+6. Word count and token frequency.
 
    - see terminal output
      Number of tokens in the train dataset: 7347
      Number of tokens in the test dataset: 921
      Number of tokens in the dev dataset: 918
 
-6. Out-of-vocabulary (OOV) words in dev and test data.
+7. Out-of-vocabulary (OOV) words in dev and test data.
 
    - see terminal output, not many words are OOV.
      Number of OOV words in dev set: 13
@@ -49,7 +50,7 @@ To Start:
      Number of OOV words in test set: 12
      Test set OOV percentage: 0.038
 
-7. N-grams (bigrams and trigrams).
+8. N-grams (bigrams and trigrams).
 
    - number of unique train bigram: 3347
      number of unique train trigram: 2449
@@ -58,7 +59,7 @@ To Start:
      number of unique dev bigram: 587
      number of unique dev trigram: 306
      
-8. Relationships across data splits.
+9. Relationships across data splits.
    - see terminal output and generated Zipf graphs
    - basic features of data across test, train, and dev are compared in 1-5, they are very similar. Zipf graph shows normal characteristics of Zipf's law
 
