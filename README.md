@@ -95,11 +95,13 @@ Advanced features of data:
     - we used two different POS taggers: average perceptron tagger from NLTK (1/6 of the tokens are tagged as JJ) and en_core_web_sm from spacy; and we chose to keep the results from spacy
     
     Train POS Tag Distribution: Counter({'NOUN': 4720, 'PROPN': 1596, 'VERB': 830, 'ADJ': 178, 'ADV': 11, 'AUX': 5, 'ADP': 4, 'INTJ': 2, 'PRON': 1})
+    
     Test POS Tag Distribution:({'NOUN': 597, 'PROPN': 198, 'VERB': 101, 'ADJ': 22, 'INTJ': 2, 'AUX': 1})
+    
     Dev POS Tag Distribution:({'NOUN': 589, 'PROPN': 214, 'VERB': 96, 'ADJ': 18, 'ADP': 1})
 
 
-12. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). The terminal output is as follows:
+13. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). The terminal output is as follows:
 
     S-O Train: 157
     S-O Dev: 61
@@ -113,7 +115,7 @@ Advanced features of data:
     V-O Dev: 1
     V-O Test: 0
 
-13. Distribution of gender-specific nouns in the dataset.
+14. Distribution of gender-specific nouns in the dataset.
 
     We have created three lists of gender-specific nouns (masculine, feminine, and neutral) that are common in English and appear in the dataset to see if the distribution is balanced. Nouns relating to human beings only were considered, those from the animal domain, e.g. cow/bull, duck/drake, mare/stallion, were not found in the dataset, therefore this distinction is ignored.
 
@@ -134,7 +136,7 @@ Advanced features of data:
     Number of feminine nouns: 30, Percentage among gender-specific nouns: 0.25
     Number of neutral nouns: 52, Percentage among gender-specific nouns: 0.43
 
-14. Relation between subjects being animate/inanimate and their labels.
+15. Relation between subjects being animate/inanimate and their labels.
 
     - intuition: our hypothesis is that it is more likely that the sentences wtih animate subjects are plausible
     - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human and "A" as animate) and saved into another file called animate_nouns.txt
@@ -144,7 +146,7 @@ Advanced features of data:
     - Test Set Distribution:  True  189 / False 118
 
 
-15. Commonsense knowledge (python package, conceptnet).
+16. Commonsense knowledge (python package, conceptnet).
 
     - go to the concept_net.py file
     - not many subject-object pairs are connected in the ConceptNet knowledge graph. Tested by any relation, not just the relation in the data. This makes sense because many objects/subjects in our dataset are not often seen together/do not have a typical relation to each other.
@@ -152,7 +154,7 @@ Advanced features of data:
       Number of subject-object pairs in dataset related by any relation in ConceptNet: 227
       Number of subject-object pairs in dataset NOT related by any relation in ConceptNet: 2222
 
-16. Word concreteness (wordnet, NLTK).
+17. Word concreteness (wordnet, NLTK).
 
     - wordnet should be downloaded in main file just by using requirements.txt and the code in file
     - see terminal
