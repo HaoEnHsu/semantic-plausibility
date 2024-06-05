@@ -7,8 +7,8 @@ Dataset: Pep3K
 Basic features of data:
 
 To Start:
--have train, test, dev in same folder as .py code files
--run requirements.txt file by: pip install -r requirements.txt
+- have train, test, dev in same folder as .py code files
+- run requirements.txt file by: pip install -r requirements.txt
 
 1. Size of dataset.
    - simply run the file, and output prints to terminal. Dataset is not that big.
