@@ -1,12 +1,14 @@
 import pandas as pd
 import matplotlib.pyplot as plt # allows making plots
 from collections import Counter
+from sklearn.metrics import cohen_kappa_score
 
 import nltk # used for wordnet
 from nltk.corpus import wordnet as wn
 
 
 # Hey wait, download WordNet if you don't have it, otherwise comment out ine belows, you only have to do once
+nltk.download('omw-1.4')
 nltk.download('wordnet')
 
 
@@ -53,6 +55,88 @@ def is_abstract_word(word): #wordnet is lexical database with words grouped into
 
     return False
 
+# Total number of all words. Used in 6, 12. 
+
+def all_words(pd_file):
+    list_of_all_words = list()
+    for i in pd_file['text']:
+        i = i.split()
+        for j in i:
+            list_of_all_words.append(j)
+    return list_of_all_words
+
+# Function extracting a set of unique words from a file. Used in 6, 12.
+
+def vocabulary(pd_file):
+    unique_words = set()
+    for i in pd_file['text']:
+        i = i.split()
+        for j in i: 
+           unique_words.add(j)
+    return unique_words
+
+# Function extracting words that are out of vocabulary in train data. Used in 6.
+def out_of_vocabulary(vocabulary):
+    out_of_vocab = set()
+    for word in vocabulary:
+        if word not in vocabulary_train:
+            out_of_vocab.add(word)
+    return out_of_vocab
+
+# Function computing the number of words that are both subject and object. Used in 12.
+def subject_and_object(pd_file):
+    instances = pd_file['text'] 
+    subject = []
+    verb = [] 
+    object = []
+    for instance in instances:
+        instance = instance.split()
+        subject.append(instance[0])
+        verb.append(instance[1])
+        object.append(instance[2])
+
+    subject_object = set()
+    for i in subject:
+        if i in object:
+            subject_object.add(i)
+    return len(subject_object)
+
+
+#Function computing the number of words that are both subject and verb. Used in 12.
+def subject_and_verb(pd_file):
+    instances = pd_file['text'] 
+    subject = []
+    verb = [] 
+    object = []
+    for instance in instances:
+        instance = instance.split()
+        subject.append(instance[0])
+        verb.append(instance[1])
+        object.append(instance[2])
+
+    subject_verb = set()
+    for i in subject:
+        if i in verb:
+            subject_verb.add(i)
+    return len(subject_verb)
+
+#Function computing the number of words that are both verb and object. Used in 12.
+def verb_and_object(pd_file):
+    instances = pd_file['text'] 
+    subject = []
+    verb = [] 
+    object = []
+    for instance in instances:
+        instance = instance.split()
+        subject.append(instance[0])
+        verb.append(instance[1])
+        object.append(instance[2])
+
+    verb_object = set()
+    for i in verb:
+        if i in object:
+            verb_object.add(i)
+    return len(verb_object)
 
 def analyze_concreteness(vocabulary):
     abstract_count = 0
@@ -77,8 +161,8 @@ def analyze_concreteness(vocabulary):
     print("Words that can be abstract: {:.2f}%".format(abstract_percentage))
     print("Concrete words: {:.2f}%".format(concrete_percentage))
     print("Words not in WordNet: {:.2f}%".format(not_in_wordnet_percentage))
-    print("\nAbstract words found:")
-    print(", ".join(abstract_words))
+    # print("\nAbstract words found:")
+    # print(", ".join(abstract_words))
 
 
 
@@ -173,9 +257,25 @@ print(f"5. Word count and token frequency:\nNumber of tokens in the train datase
 print(f"Number of tokens in the test dataset: {total_test_tokens}")
 print(f"Number of tokens in the dev dataset: {total_dev_tokens}", '\n')
 
+#6. Out-of-vocabulary words in dev and test
 
-# 6. Zipf's law, graph of term frequency
-print('10. Zipfs law graph/comparing the data splits(mostly done in 1-5)\n')
+# Instantiating vocabularies of train, dev, and test sets.
+vocabulary_train = vocabulary(train_data)
+vocabulary_dev = vocabulary(dev_data)
+vocabulary_test = vocabulary(test_data)
+
+oov_dev = out_of_vocabulary(vocabulary_dev)
+oov_test = out_of_vocabulary(vocabulary_test)
+
+print("6. Out-of-vocabulary words")
+print("Words in dev set that do not appear in train set: ",oov_dev)
+print("Number of OOV words in dev set:",len(oov_dev), "\nDev OOV Percentage:",len(oov_dev)/len(vocabulary_dev)) #Output: 13, 0.039
+print("Words in test set that do not appear in train set:", oov_test)
+print("Number of OOV words in test set:",len(oov_test), "\nTest OOV Percentage:",len(oov_test)/len(vocabulary_test)) #Output: 12, 0.038
+
+
+# 8. Zipf's law, graph of term frequency
+print('8. Zipfs law graph/comparing the data splits(mostly done in 1-5)\n')
 # makes plot
 plt.figure(figsize=(10, 6))
 
@@ -200,10 +300,77 @@ plt.ylabel('Frequency')
 plt.tight_layout()
 plt.show()
 
+# 9. (Dis)agreement in the annotation of train data. Cohen's kappa.
+
+# Reading from the annotation_agreement.csv
+
+annotation_data = pd.read_csv("annotation agreement.csv")
+
+clara_anot = annotation_data['Clara']
+sergei_anot = annotation_data['Sergei']
+shawn_anot = annotation_data['Shawn']
+gold_standard = annotation_data['gold_standard']
+
+clara_gold = (cohen_kappa_score(clara_anot,gold_standard))
+sergei_gold = (cohen_kappa_score(sergei_anot,gold_standard))
+shawn_gold = (cohen_kappa_score(shawn_anot,gold_standard))
+
+aver_kappa_score = (clara_gold + sergei_gold + shawn_gold)/3
+print("9. Cohen's kappa")
+print("Clara vs Gold:", clara_gold)
+print("Sergei vs Gold:", sergei_gold)
+print("Hao-En vs Gold:", shawn_gold)
+print("Average kappa score: ", aver_kappa_score)
+
+
+# 12. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O).
+
+print("12. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O).")
+print("Subject-Object:")
+print(subject_and_object(train_data))
+print(subject_and_object(dev_data))
+print(subject_and_object(test_data))
+print("Subject-Verb:")
+print(subject_and_verb(train_data))
+print(subject_and_verb(dev_data))
+print(subject_and_verb(test_data))
+print("Verb-Object:")
+print(verb_and_object(train_data))
+print(verb_and_object(dev_data))
+print(verb_and_object(test_data))
+
+# 13. Distribution of gender-specific nouns in the dataset. Checked for those among animals, e.g. cow/bull, duck/drake, mare/stallion, but the dataset does not have those.
+
+#List of gendered nouns to check against
+masculine_nouns = ['man','father','boy','husband','uncle','policeman','dad','superman','son']
+feminine_nouns = ['woman','mother','girl','wife','aunt','witch','girlfriend','grandma','women','daughter']
+gender_neutral_nouns = ['person','parent','child','kid','baby','spouse','infant','people','human','student','chef','clown','baker','doctor','dentist','boxer','chef','officer','barber','wrestler']
+
+# Counting the number of occurences of masculine, feminine, and neutral nouns
+masculine_count = 0
+feminine_count = 0
+gender_neutral_count = 0
+
+# For the statistics of gendered nouns, use variables train_data, dev_data, or test_data in the brackets below.
+for i in all_words(train_data):
+    if i in masculine_nouns:
+        masculine_count += 1
+    elif i in feminine_nouns:
+        feminine_count += 1
+    elif i in gender_neutral_nouns:
+        gender_neutral_count += 1
+
+# Overall number of gendered nouns. To be used for calculating the percentage.
+total_sum = masculine_count + feminine_count + gender_neutral_count
+print("13. Distribution of gender-specific nouns in the dataset. ")
+print("Number of masculine nouns:", masculine_count, ", Percentage among gender-specific nouns:", masculine_count/total_sum)
+print("Number of feminine nouns:", feminine_count, ", Percentage among gender-specific nouns:", feminine_count/total_sum)
+print("Number of neutral nouns:", gender_neutral_count, ", Percentage among gender-specific nouns:", gender_neutral_count/total_sum)
+
 # 15. word concreteness (wordnet, NLTK)
 combined_vocab = train_unique_words.union(test_unique_words, dev_unique_words) # unions for sets
 combined_tokens = train_tokens + test_tokens + dev_tokens # + for lists
-print('11. Word concreteness using wordnet from NLTK:')
+print('15. Word concreteness using wordnet from NLTK:')
 print('Terms:')
 analyze_concreteness(combined_vocab)
 print('Tokens:')
