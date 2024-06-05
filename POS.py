@@ -1,13 +1,7 @@
 import pandas as pd
-import nltk
 from collections import Counter
 import matplotlib.pyplot as plt
 import spacy
-
-# Download necessary NLTK data files
-nltk.download('punkt')
-nltk.download('averaged_perceptron_tagger')
-
 
 # Load SpaCy model
 nlp = spacy.load('en_core_web_sm')
@@ -60,8 +54,17 @@ def plot_pos_distribution(pos_distribution, title):
     plt.title(title)
     plt.xticks(rotation=90)
     plt.show()
+    return pos_distribution
 
-# Plot POS tag distribution for each dataset
-plot_pos_distribution(train_pos_distribution, 'Train POS Tag Distribution')
-plot_pos_distribution(test_pos_distribution, 'Test POS Tag Distribution')
-plot_pos_distribution(dev_pos_distribution, 'Dev POS Tag Distribution')
+# Plot POS tag distribution for each dataset and print the distribution
+print("Train POS Tag Distribution:")
+train_pos_distribution = plot_pos_distribution(train_pos_distribution, 'Train POS Tag Distribution')
+print(train_pos_distribution)
+
+print("\nTest POS Tag Distribution:")
+test_pos_distribution = plot_pos_distribution(test_pos_distribution, 'Test POS Tag Distribution')
+print(test_pos_distribution)
+
+print("\nDev POS Tag Distribution:")
+dev_pos_distribution = plot_pos_distribution(dev_pos_distribution, 'Dev POS Tag Distribution')
+print(dev_pos_distribution)
