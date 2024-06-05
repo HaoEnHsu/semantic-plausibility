@@ -137,6 +137,24 @@ def verb_and_object(pd_file):
             verb_object.add(i)
     return len(verb_object)
 
+# Function printing the number of masculine, feminine, and neutral nouns in each set. Used in 13.
+
+def gendered_nouns(pd_file):
+    masculine_count = 0
+    feminine_count = 0
+    gender_neutral_count = 0
+    for i in all_words(pd_file):
+        if i in masculine_nouns:
+            masculine_count += 1
+        elif i in feminine_nouns:
+            feminine_count += 1
+        elif i in gender_neutral_nouns:
+            gender_neutral_count += 1
+    total_sum = masculine_count + feminine_count + gender_neutral_count
+    print("Number of masculine nouns:", masculine_count, ", Percentage among gender-specific nouns:", masculine_count/total_sum)
+    print("Number of feminine nouns:", feminine_count, ", Percentage among gender-specific nouns:", feminine_count/total_sum)
+    print("Number of neutral nouns:", gender_neutral_count, ", Percentage among gender-specific nouns:", gender_neutral_count/total_sum)
+
 def analyze_concreteness(vocabulary):
     abstract_count = 0
     concrete_count = 0
@@ -368,26 +386,12 @@ masculine_nouns = ['man','father','boy','husband','uncle','policeman','dad','sup
 feminine_nouns = ['woman','mother','girl','wife','aunt','witch','girlfriend','grandma','women','daughter']
 gender_neutral_nouns = ['person','parent','child','kid','baby','spouse','infant','people','human','student','chef','clown','baker','doctor','dentist','boxer','chef','officer','barber','wrestler']
 
-# Counting the number of occurences of masculine, feminine, and neutral nouns
-masculine_count = 0
-feminine_count = 0
-gender_neutral_count = 0
-
-# For the statistics of gendered nouns, use variables train_data, dev_data, or test_data in the brackets below.
-for i in all_words(train_data):
-    if i in masculine_nouns:
-        masculine_count += 1
-    elif i in feminine_nouns:
-        feminine_count += 1
-    elif i in gender_neutral_nouns:
-        gender_neutral_count += 1
-
-# Overall number of gendered nouns. To be used for calculating the percentage.
-total_sum = masculine_count + feminine_count + gender_neutral_count
-print("13. Distribution of gender-specific nouns in the dataset. ")
-print("Number of masculine nouns:", masculine_count, ", Percentage among gender-specific nouns:", masculine_count/total_sum)
-print("Number of feminine nouns:", feminine_count, ", Percentage among gender-specific nouns:", feminine_count/total_sum)
-print("Number of neutral nouns:", gender_neutral_count, ", Percentage among gender-specific nouns:", gender_neutral_count/total_sum)
+print("Gendered nouns in train data:")
+print(gendered_nouns(train_data))
+print("Gendered nouns in dev data:")
+print(gendered_nouns(dev_data))
+print("Gendered nouns in test data:")
+print(gendered_nouns(test_data))
 
 # 15. word concreteness (wordnet, NLTK)
 combined_vocab = train_unique_words.union(test_unique_words, dev_unique_words) # unions for sets
