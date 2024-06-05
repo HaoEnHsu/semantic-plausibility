@@ -51,6 +51,13 @@ To Start:
 
 7. N-grams (bigrams and trigrams).
 
+   - number of unique train bigram: 3347
+     number of unique train trigram: 2449
+     number of unique test bigram: 587
+     number of unique test trigram: 307
+     number of unique dev bigram: 587
+     number of unique dev trigram: 306
+     
 8. Relationships across data splits.
    - see terminal output and generated Zipf graphs
    - basic features of data across test, train, and dev are compared in 1-5, they are very similar. Zipf graph shows normal characteristics of Zipf's law
@@ -72,12 +79,39 @@ Advanced features of data:
     - library/packages used: pandas, nltk, matplotlib
     - intuition: if some n-grams (bigram and trigram here) occur frequently in a corpus, it is much more likely to be plausible
     - corpus used: brown (W. N. Francis and H. Kucera [1964]) from NLTK (http://www.hit.uib.no/icame/brown/bcm.html)
+    - collocation:
+Bigram         Dataset Freq   Brown Corpus Freq
+('open', 'door')        4       7
+('open', 'window')      4       5
+('cool', 'air')         2       2
+('cool', 'water')       3       2
+('warm', 'water')       2       2
+('plane', 'crash')      1       2
+('open', 'bottle')      2       1
+('clean', 'slate')      1       1
+('drink', 'water')      1       1
+('sun', 'heat')         2       1
+('drink', 'beer')       3       1
+('cook', 'stove')       1       1
+('air', 'cool')         2       1
+('clean', 'house')      3       1
+('oil', 'heat')         2       1
+('horse', 'kick')       3       1
+('pour', 'water')       2       1
+('dog', 'shake')        3       0
+('shake', 'cat')        1       0
+('student', 'climb')    2       0
+
 
 11. Part-of-Speech tag distribution.
 
     - library/packages used: pandas, matplotlib, spacy
     - intuition: though the distribution of POS tags in the dataset are mostly subject (Noun), verb, object (Noun), we found some words are semantically ambiguous (e.g., the word chill can be both a noun, adjective, and verb); thus these words may affect the model's performance
     - we used two different POS taggers: average perceptron tagger from NLTK (1/6 of the tokens are tagged as JJ) and en_core_web_sm from spacy; and we chose to keep the results from spacy
+    - Train POS Tag Distribution: Counter({'NOUN': 4720, 'PROPN': 1596, 'VERB': 830, 'ADJ': 178, 'ADV': 11, 'AUX': 5, 'ADP': 4, 'INTJ': 2, 'PRON': 1})
+    - Test POS Tag Distribution:({'NOUN': 597, 'PROPN': 198, 'VERB': 101, 'ADJ': 22, 'INTJ': 2, 'AUX': 1})
+    - Dev POS Tag Distribution:({'NOUN': 589, 'PROPN': 214, 'VERB': 96, 'ADJ': 18, 'ADP': 1})
+
 
 12. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). The terminal output is as follows:
 
@@ -119,6 +153,10 @@ Advanced features of data:
     - intuition: our hypothesis is that it is more likely that the sentences wtih animate subjects are plausible
     - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human and "A" as animate) and saved into another file called animate_nouns.txt
     - library/packages used: pandas, matplotlib
+    - Train Set Distribution: True: 1521 / False 928
+    - Dev Set Distribution:   True: 178 / False 128
+    - Test Set Distribution:  True  189 / False 118
+
 
 15. Commonsense knowledge (python package, conceptnet).
 
