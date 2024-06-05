@@ -8,14 +8,14 @@ Basic features of data:
 
 To Start:
 -have train, test, dev in same folder as .py code files
--run requirements.txt file
+-run requirements.txt file by: pip install -r requirements.txt
 
 1. Size of dataset.
-
    - simply run the file, and output prints to terminal. Dataset is not that big.
-     Number of data instances in train: 2449
-     Number of data instances in testing data: 307
-     Number of data instances in validation data: 306
+
+   Number of data instances in train: 2449
+   Number of data instances in testing data: 307
+   Number of data instances in validation data: 306
 
 2. Label balance of dataset, how many data instances are labeled plausible versus implausible.
    - see terminal outputs numbers and generated bar chart. The data is balanced.
@@ -29,35 +29,40 @@ To Start:
    
 4. Number of items in each data instance.
    - see terminal output and generated bar chart. Each data instance has 3 words.
-     {3: 2449}
+
+   {3: 2449}
+     
 5. Vocabulary in dataset.
    - see terminal output, the total number of unique terms in the dataset is smaller than we expected.
-     Number of unique terms in the train dataset: 561
-     Number of unique terms in the test dataset: 315
-     Number of unique terms in the dev dataset: 330
-6. Word count and token frequency.
+     
+   Number of unique terms in the train dataset: 561
+   Number of unique terms in the test dataset: 315
+   Number of unique terms in the dev dataset: 330
 
+6. Word count and token frequency.
    - see terminal output
-     Number of tokens in the train dataset: 7347
-     Number of tokens in the test dataset: 921
-     Number of tokens in the dev dataset: 918
+
+   Number of tokens in the train dataset: 7347
+   Number of tokens in the test dataset: 921
+   Number of tokens in the dev dataset: 918
 
 7. Out-of-vocabulary (OOV) words in dev and test data.
-
    - see terminal output, not many words are OOV.
-     Number of OOV words in dev set: 13
-     Dev set OOV percentage: 0.039
-     Number of OOV words in test set: 12
-     Test set OOV percentage: 0.038
+
+   Number of OOV words in dev set: 13
+   Dev set OOV percentage: 0.039
+   Number of OOV words in test set: 12
+   Test set OOV percentage: 0.038
 
 8. N-grams (bigrams and trigrams).
-
-   - number of unique train bigram: 3347
-     number of unique train trigram: 2449
-     number of unique test bigram: 587
-     number of unique test trigram: 307
-     number of unique dev bigram: 587
-     number of unique dev trigram: 306
+    - see terminal output
+      
+   number of unique train bigram: 3347
+   number of unique train trigram: 2449
+   number of unique test bigram: 587
+   number of unique test trigram: 307
+   number of unique dev bigram: 587
+   number of unique dev trigram: 306
      
 9. Relationships across data splits.
    - see terminal output and generated Zipf graphs
@@ -66,8 +71,10 @@ To Start:
 Advanced features of data:
 
 9. (Dis)agreement in annotation, Cohen's kappa.
-   library/packages used: sklearn
-   We have randomly selected 20 instances and each of us annotated them to see if we agree with the labeled annotations. Cohen's kappa (imported from sklearn.metrics) was used for the calculation of the agreement in annotation. The results are as follows:
+   - library/packages used: sklearn
+   - We have randomly selected 20 instances and each of us annotated them to see if we agree with the labeled annotations.
+   - Cohen's kappa (imported from sklearn.metrics) was used for the calculation of the agreement in annotation. The results are as follows:
+     
    Clara vs Gold kappa score: 0.9
    Sergei vs Gold kappa score: 0.61
    Hao-En vs Gold kappa score: 1.0
@@ -76,20 +83,20 @@ Advanced features of data:
    Looking at the dataset, we have found numerous instances, where it could be easy to disagree with the gold standard annotation.
 
 10. Co-occurrence/collocation (compared to large corpus).
-
     - library/packages used: pandas, nltk, matplotlib
     - intuition: if some n-grams (bigram and trigram here) occur frequently in a corpus, it is much more likely to be plausible
     - corpus used: brown (W. N. Francis and H. Kucera [1964]) from NLTK (http://www.hit.uib.no/icame/brown/bcm.html)
+    - results are plotted by matplotlib
 
 
 11. Part-of-Speech tag distribution.
-
     - library/packages used: pandas, matplotlib, spacy
     - intuition: though the distribution of POS tags in the dataset are mostly subject (Noun), verb, object (Noun), we found some words are semantically ambiguous (e.g., the word chill can be both a noun, adjective, and verb); thus these words may affect the model's performance
     - we used two different POS taggers: average perceptron tagger from NLTK (1/6 of the tokens are tagged as JJ) and en_core_web_sm from spacy; and we chose to keep the results from spacy
-    - Train POS Tag Distribution: Counter({'NOUN': 4720, 'PROPN': 1596, 'VERB': 830, 'ADJ': 178, 'ADV': 11, 'AUX': 5, 'ADP': 4, 'INTJ': 2, 'PRON': 1})
-    - Test POS Tag Distribution:({'NOUN': 597, 'PROPN': 198, 'VERB': 101, 'ADJ': 22, 'INTJ': 2, 'AUX': 1})
-    - Dev POS Tag Distribution:({'NOUN': 589, 'PROPN': 214, 'VERB': 96, 'ADJ': 18, 'ADP': 1})
+    
+    Train POS Tag Distribution: Counter({'NOUN': 4720, 'PROPN': 1596, 'VERB': 830, 'ADJ': 178, 'ADV': 11, 'AUX': 5, 'ADP': 4, 'INTJ': 2, 'PRON': 1})
+    Test POS Tag Distribution:({'NOUN': 597, 'PROPN': 198, 'VERB': 101, 'ADJ': 22, 'INTJ': 2, 'AUX': 1})
+    Dev POS Tag Distribution:({'NOUN': 589, 'PROPN': 214, 'VERB': 96, 'ADJ': 18, 'ADP': 1})
 
 
 12. Number of unique words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). The terminal output is as follows:
