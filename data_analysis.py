@@ -1,49 +1,56 @@
 import pandas as pd
 import matplotlib.pyplot as plt # allows making plots
 from collections import Counter
+
 import nltk # used for wordnet
 from nltk.corpus import wordnet as wn
 
 
-# Hey wait, download WordNet if you don't have it, otherwise comment out line belows, you only have to do once
-#nltk.download('wordnet')
+# Hey wait, download WordNet if you don't have it, otherwise comment out ine belows, you only have to do once
+nltk.download('wordnet')
 
 
-
-def calculate_vocab_statistics(data):
+def calculate_vocab_statistics(data): # used in 4, 5, 10
     tokens = [line.split() for line in data['text']] # list of list of tokens
     list_tokens = [word for sublist in tokens for word in sublist] # all tokens in single list
     num_tokens = sum(len(tokens) for tokens in tokens)
     vocab = set(list_tokens)
     token_counts = Counter(list_tokens)
-    sorted_word_counts = sorted(token_counts.values(), reverse=True)
+    sorted_word_counts = sorted(token_counts.values(), reverse=True) # sorts by how many tokens per term
     return list_tokens, num_tokens, vocab, sorted_word_counts
+
 
 def is_abstract_word(word): #wordnet is lexical database with words grouped into sets of synonyms that are connected by various relationships
     # such as hypernyms, hyponyms, meronyms, and holonyms, these relationships are indirectly leveraged to infer abstractness
     synsets = wn.synsets(word) # check if word in synsets, a set of cognitive synonyms
     if not synsets:
         return False
-    # If any synset is an adjective, mark as abstract (only applies to a very small percentage of this dataset, ~2%)
+
+    # If any synset is an adjective, mark as abstract (only applies to small percentage of this dataset, ~2%)
     if any('a' in s.pos() for s in synsets):
         return True
+
     abstract_keywords = ['idea', 'concept', 'state', 'quality'] # list of keywords associated with abstract concepts
     for synset in synsets: # if keyword in def or example of synset, marked as abstract
         definition = synset.definition()
         examples = synset.examples()
+
         if any(keyword in definition for keyword in abstract_keywords):
             return True
+
         if any(keyword in ' '.join(examples) for keyword in abstract_keywords):
             return True
+
     abstract_hypernyms = {'attribute', 'property', 'state', 'quality'} # set of abstract hypernyms
     # hypernym: word more generic or abstract than its subordinates or hyponyms
     for synset in synsets:
-        hypernyms = synset.hypernyms() # if hypernyn in synset, marked as abstract
+        hypernyms = synset.hypernyms() # if hypernym in synset, marked as abstract
         while hypernyms:
             hypernym_names = {hypernym.name().split('.')[0] for hypernym in hypernyms}
             if abstract_hypernyms & hypernym_names:
                 return True
             hypernyms = [h for hypernym in hypernyms for h in hypernym.hypernyms()]
+
     return False
 
 
@@ -52,7 +59,8 @@ def analyze_concreteness(vocabulary):
     concrete_count = 0
     not_in_wordnet_count = 0
     abstract_words = []
-    for word in vocabulary: # loop putting each word in category
+
+    for word in vocabulary: # loop putting each word in cat
         synsets = wn.synsets(word)
         if not synsets:
             not_in_wordnet_count += 1
@@ -61,6 +69,7 @@ def analyze_concreteness(vocabulary):
             abstract_words.append(word)
         else:
             concrete_count += 1
+
     total_words = len(vocabulary)
     abstract_percentage = (abstract_count / total_words) * 100
     concrete_percentage = (concrete_count / total_words) * 100
@@ -70,6 +79,7 @@ def analyze_concreteness(vocabulary):
     print("Words not in WordNet: {:.2f}%".format(not_in_wordnet_percentage))
     print("\nAbstract words found:")
     print(", ".join(abstract_words))
+
 
 
 
@@ -164,7 +174,7 @@ print(f"Number of tokens in the test dataset: {total_test_tokens}")
 print(f"Number of tokens in the dev dataset: {total_dev_tokens}", '\n')
 
 
-# 10. Zipf's law, graph of term frequency
+# 6. Zipf's law, graph of term frequency
 print('10. Zipfs law graph/comparing the data splits(mostly done in 1-5)\n')
 # makes plot
 plt.figure(figsize=(10, 6))
@@ -190,7 +200,7 @@ plt.ylabel('Frequency')
 plt.tight_layout()
 plt.show()
 
-# 11. word concreteness (wordnet, NLTK)
+# 15. word concreteness (wordnet, NLTK)
 combined_vocab = train_unique_words.union(test_unique_words, dev_unique_words) # unions for sets
 combined_tokens = train_tokens + test_tokens + dev_tokens # + for lists
 print('11. Word concreteness using wordnet from NLTK:')
