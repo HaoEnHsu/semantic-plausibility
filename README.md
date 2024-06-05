@@ -11,7 +11,6 @@ To Start:
 - run requirements.txt file by: pip install -r requirements.txt
 - running ConceptNet could be problematic. A lite version of the knowledge graph has to be downloaded to your computer. First run file, and it will download a version. If this doesn't work, please go to this link: https://pypi.org/project/conceptnet-lite/#files
 - the second download option worked on Clara's computer. If this still doesn't work, this is why we have 16 features.
-- to run 11.POS, please input the command to terminal: python -m spacy download en_core_web_sm
 
 1. Size of dataset.
 - simply run the file, and output prints to terminal. Dataset is not that big.
