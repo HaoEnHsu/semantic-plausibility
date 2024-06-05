@@ -59,15 +59,62 @@ def subject_and_object(pd_file):
         verb.append(instance[1])
         object.append(instance[2])
 
-    subject_object = []
+    subject_object = set()
     for i in subject:
         if i in object:
-            subject_object.append(i)
+            subject_object.add(i)
     return len(subject_object)
 
-print("Number of nouns in train set that are both subject and object:",subject_and_object(train_data))
-print("Number of nouns in dev set that are both subject and object:",subject_and_object(dev_data))
-print("Number of nouns in test set that are both subject and object:",subject_and_object(test_data))
+def subject_and_verb(pd_file):
+    instances = pd_file['text'] 
+    subject = []
+    verb = [] 
+    object = []
+    for instance in instances:
+        instance = instance.split()
+        subject.append(instance[0])
+        verb.append(instance[1])
+        object.append(instance[2])
+
+    subject_verb = set()
+    for i in subject:
+        if i in verb:
+            subject_verb.add(i)
+    return len(subject_verb)
+
+def verb_and_object(pd_file):
+    instances = pd_file['text'] 
+    subject = []
+    verb = [] 
+    object = []
+    for instance in instances:
+        instance = instance.split()
+        subject.append(instance[0])
+        verb.append(instance[1])
+        object.append(instance[2])
+
+    verb_object = set()
+    for i in verb:
+        if i in object:
+            verb_object.add(i)
+    return len(verb_object)
+
+print("Subject-Object:")
+print(subject_and_object(train_data))
+print(subject_and_object(dev_data))
+print(subject_and_object(test_data))
+print("Subject-Verb:")
+print(subject_and_verb(train_data))
+print(subject_and_verb(dev_data))
+print(subject_and_verb(test_data))
+print("Verb-Object:")
+print(verb_and_object(train_data))
+print(verb_and_object(dev_data))
+print(verb_and_object(test_data))
+
+# print("Number of nouns in train set that are both subject and object:",subject_and_object(train_data))
+# print("Number of nouns in dev set that are both subject and object:",subject_and_object(dev_data))
+# print("Number of nouns in test set that are both subject and object:",subject_and_object(test_data))
 
 
 ''' 13. Distribution of gender-specific nouns in the dataset.

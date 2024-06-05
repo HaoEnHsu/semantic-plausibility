@@ -23,17 +23,17 @@ Linguistic Characteristics:
    - library/packages used: pandas, matplotlib, spacy
 7. Number of times words appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). SERGEI
 
-   S-O Train: 2143
-   S-O Dev: 208
-   S-O Test: 228
+   S-O Train: 157
+   S-O Dev: 61
+   S-O Test: 62
 
-   S-V Train:
-   S-V Dev:
-   S-V Test:
+   S-V Train: 4
+   S-V Dev: 0
+   S-V Test: 1
 
-   V-O Train:
-   V-O Dev:
-   V-O Test:
+   V-O Train: 1
+   V-O Dev: 1
+   V-O Test: 0
 
 8. (Dis)agreement in annotation, Cohen's kappa. SERGEI
    We have randomly selected 20 instances and each of us annotated them to see if we agree with the labeled annotations. Cohen's kappa (imported from sklearn.metrics) was used for the calculation of the agreement in annotation. The results are as follows:
