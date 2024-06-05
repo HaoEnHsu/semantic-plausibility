@@ -4,9 +4,11 @@ from collections import Counter
 import matplotlib.pyplot as plt
 from nltk.corpus import brown
 
+# Download necessary NLTK data
 nltk.download('brown')
 nltk.download('punkt')
 
+# Load dataset
 train_data = pd.read_csv('train.csv')
 test_data = pd.read_csv('test.csv')
 dev_data = pd.read_csv('dev.csv')
@@ -44,21 +46,29 @@ bigrams_with_brown_freq = [(bigram, dataset_bigram_freq[bigram], get_brown_bigra
 # Sort bigrams based on their frequencies in the Brown corpus
 sorted_bigrams = sorted(bigrams_with_brown_freq, key=lambda x: x[2], reverse=True)
 
-# Display the sorted bigrams
-for bigram, dataset_freq, brown_freq in sorted_bigrams:
-    print(f"Bigram: {bigram}, Dataset Frequency: {dataset_freq}, Brown Corpus Frequency: {brown_freq}")
+# Display the sorted bigrams with their frequencies
+print("Bigram\tDataset Frequency\tBrown Corpus Frequency")
+for bigram, dataset_freq, brown_freq in sorted_bigrams[:20]:
+    print(f"{bigram}\t{dataset_freq}\t{brown_freq}")
 
 # Visualization
 def plot_bigrams(bigrams, title):
-    bigram_strings = [' '.join(bigram[0]) for bigram in bigrams[:20]]  
+    bigram_strings = [' '.join(bigram[0]) for bigram in bigrams[:20]]  # Only plot top 20 for readability
+    dataset_frequencies = [bigram[1] for bigram in bigrams[:20]]
     brown_frequencies = [bigram[2] for bigram in bigrams[:20]]
     
-    plt.figure(figsize=(12, 4))
-    plt.bar(bigram_strings, brown_frequencies, color='red')
+    x = range(len(bigram_strings))
+    
+    plt.figure(figsize=(15, 5))
+    plt.bar(x, dataset_frequencies, width=0.4, label='Dataset', color='blue', align='center')
+    plt.bar(x, brown_frequencies, width=0.4, label='Brown Corpus', color='red', align='edge')
+    
     plt.xlabel('Bigrams')
-    plt.ylabel('Frequency in Brown Corpus')
+    plt.ylabel('Frequency')
     plt.title(title)
-    plt.xticks(rotation=90)
+    plt.xticks(x, bigram_strings, rotation=90)
+    plt.legend()
+    plt.tight_layout()
     plt.show()
 
 plot_bigrams(sorted_bigrams, 'Top 20 Dataset Bigrams Sorted by Brown Corpus Frequency')
