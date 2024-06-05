@@ -116,10 +116,8 @@ Advanced features of data:
     V-O Test: 0
 
 14. Distribution of gender-specific nouns in the dataset.
-
-    We have created three lists of gender-specific nouns (masculine, feminine, and neutral) that are common in English and appear in the dataset to see if the distribution is balanced. Nouns relating to human beings only were considered, those from the animal domain, e.g. cow/bull, duck/drake, mare/stallion, were not found in the dataset, therefore this distinction is ignored.
-
-    We have observed a gender imbalance in the dataset with a greater number of masculine nouns than feminine.
+   - We have created three lists of gender-specific nouns (masculine, feminine, and neutral) that are common in English and appear in the dataset to see if the distribution is balanced. Nouns relating to human beings only were considered, those from the animal domain, e.g. cow/bull, duck/drake, mare/stallion, were not found in the dataset, therefore this distinction is ignored.
+   - We have observed a gender imbalance in the dataset with a greater number of masculine nouns than feminine.
 
     Train set:
     Number of masculine nouns: 273, Percentage among gender-specific nouns: 0.35
