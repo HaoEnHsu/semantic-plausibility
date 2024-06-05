@@ -6,7 +6,7 @@ train_data = pd.read_csv('train.csv')
 test_data = pd.read_csv('test.csv')
 dev_data = pd.read_csv('dev.csv')
 
-# Kappa score for the train data
+# 8. Kappa score for the train data
 annotation_data = pd.read_csv("annotation agreement.csv")
 # print(annotation_data)
 
@@ -99,22 +99,18 @@ def verb_and_object(pd_file):
             verb_object.add(i)
     return len(verb_object)
 
-print("Subject-Object:")
-print(subject_and_object(train_data))
-print(subject_and_object(dev_data))
-print(subject_and_object(test_data))
-print("Subject-Verb:")
-print(subject_and_verb(train_data))
-print(subject_and_verb(dev_data))
-print(subject_and_verb(test_data))
-print("Verb-Object:")
-print(verb_and_object(train_data))
-print(verb_and_object(dev_data))
-print(verb_and_object(test_data))
-
-# print("Number of nouns in train set that are both subject and object:",subject_and_object(train_data))
-# print("Number of nouns in dev set that are both subject and object:",subject_and_object(dev_data))
-# print("Number of nouns in test set that are both subject and object:",subject_and_object(test_data))
+# print("Subject-Object:")
+# print(subject_and_object(train_data))
+# print(subject_and_object(dev_data))
+# print(subject_and_object(test_data))
+# print("Subject-Verb:")
+# print(subject_and_verb(train_data))
+# print(subject_and_verb(dev_data))
+# print(subject_and_verb(test_data))
+# print("Verb-Object:")
+# print(verb_and_object(train_data))
+# print(verb_and_object(dev_data))
+# print(verb_and_object(test_data))
 
 
 ''' 13. Distribution of gender-specific nouns in the dataset.
@@ -130,6 +126,7 @@ masculine_count = 0
 feminine_count = 0
 gender_neutral_count = 0
 
+# For the statistics of gendered nouns, use train_data, dev_data, or test_data in the brackets below.
 for i in all_words(test_data):
     if i in masculine_nouns:
         masculine_count += 1
@@ -138,7 +135,7 @@ for i in all_words(test_data):
     elif i in gender_neutral_nouns:
         gender_neutral_count += 1
 
-# Overall number of gendered nouns. To be used for normalisation
+# Overall number of gendered nouns. To be used for calculating the percentage.
 total_sum = masculine_count + feminine_count + gender_neutral_count
 
 # print("Number of masculine nouns:", masculine_count, ", Percentage among gender-specific nouns:", masculine_count/total_sum)
@@ -162,10 +159,10 @@ def out_of_vocabulary(vocabulary):
 oov_dev = out_of_vocabulary(vocabulary_dev)
 oov_test = out_of_vocabulary(vocabulary_test)
 
-# print(oov_dev) #Words in dev set that do not appear in train set
-# print("Number of OOV words in dev set:",len(oov_dev), "\nDev OOV Percentage:",len(oov_dev)/len(vocabulary_dev)) #Output: 13, 0.039
-# print(oov_test) #Words in test set that do not appear in train set
-# print("Number of OOV words in test set:",len(oov_test), "\nTest OOV Percentage:",len(oov_test)/len(vocabulary_test)) #Output: 12, 0.038
+print("Words in dev set that do not appear in train set: ",oov_dev)
+print("Number of OOV words in dev set:",len(oov_dev), "\nDev OOV Percentage:",len(oov_dev)/len(vocabulary_dev)) #Output: 13, 0.039
+print("Words in test set that do not appear in train set:", oov_test)
+print("Number of OOV words in test set:",len(oov_test), "\nTest OOV Percentage:",len(oov_test)/len(vocabulary_test)) #Output: 12, 0.038
 
 # print(len(vocabulary_dev))
 # print(len(vocabulary_test))
