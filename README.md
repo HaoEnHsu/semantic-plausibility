@@ -42,5 +42,5 @@ Linguistic Characteristics:
     
 16. relation between subjects being animate/inanimate and their labels SHAWN
     - intuition: our hypothesis is that it is more likely that the sentences wtih animate subjects are plausible
-    - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-               animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human       and "A" as animate) and saved into another file called animate_nouns.txt
+    - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human       and "A" as animate) and saved into another file called animate_nouns.txt
     - library/packages used: pandas, matplotlib
