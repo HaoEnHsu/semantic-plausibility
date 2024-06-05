@@ -8,13 +8,42 @@ Dataset: Pep3K
 
 Basic features of data:
 
+To Start:
+-have train, test, dev in same folder as .py code files
+-run requirements.txt file
+
 1. Size of dataset.
+   -simply run the file, and output prints to terminal
+   
+   Number of data instances in train: 2449
+   Number of data instances in testing data: 307
+   Number of data instances in validation data: 306
+   
 2. Label balance of dataset, how many data instances are labeled plausible versus implausible.
+  -see terminal outputs numbers and generated bar chart. The data is balanced.
+   Train label counts:
+    {0: 1227, 1: 1222}
+   Test label counts:
+    {0: 154, 1: 153}
+   Validation label counts:
+    {0: 153, 1: 153} 
 3. Number of items in each data instance.
+   -see terminal output and generated bar chart. Each data instance has 3 words.
+    {3: 2449}
 4. Vocabulary in dataset.
+   -see terminal output
+   Number of unique terms in the train dataset: 561
+   Number of unique terms in the test dataset: 315
+   Number of unique terms in the dev dataset: 330
+   
 5. Word count and token frequency.
+   -see terminal output
+   Number of tokens in the train dataset: 7347
+   Number of tokens in the test dataset: 921
+   Number of tokens in the dev dataset: 918
 
 6. Out-of-vocabulary (OOV) words in dev and test data.
+   -see terminal output
    Number of OOV words in dev set: 13
    Dev set OOV percentage: 0.039
    Number of OOV words in test set: 12
@@ -23,7 +52,8 @@ Basic features of data:
 7. N-grams (bigrams and trigrams).
 
 8. Relationships across data splits: CLARA
-   compare basic features of data across test, train, and dev
+   -see terminal output and generated Zipf graphs
+   -basic features of data across test, train, and dev are compared in 1-5, they are very          similar.
 
 Advanced features of data:
 
@@ -86,6 +116,23 @@ V-O Test: 0
     - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human and "A" as animate) and saved into another file called animate_nouns.txt
     - library/packages used: pandas, matplotlib
 
-15. Commonsense knowledge (python package, conceptnet).
+15. Commonsense knowledge (python package, conceptnet). CLARA
+    -go to the concept_net.py file
+   Commonsense knowledge evaluation using ConceptNet:
+   Number of subject-object pairs in dataset related by any relation in ConceptNet: 227
+   Number of subject-object pairs in dataset NOT related by any relation in ConceptNet: 2222
 
-16. Word concreteness (wordnet, NLTK).
+
+16. Word concreteness (wordnet, NLTK). CLARA
+    -wordnet should be downloaded in main file just by using requirements.txt and the code in       file
+    -see terminal
+   Word concreteness using wordnet from NLTK:
+   Terms:
+   Words that can be abstract: 27.23%
+   Concrete words: 72.77%
+   Words not in WordNet: 0.00%
+   Tokens:
+   Words that can be abstract: 26.64%
+   Concrete words: 73.36%
+   Words not in WordNet: 0.00%
+    
