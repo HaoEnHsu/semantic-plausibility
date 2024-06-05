@@ -141,7 +141,9 @@ Advanced features of data:
 - dataset used: en-animacy-train (lingvenvist/en-animacy), link: https://huggingface.co/datasets/lingvenvist/en-animacy/tree/main; after that we trimmed the dataset and keep only animate nouns (the entries labelled as "H" as human and "A" as animate) and saved into another file called animate_nouns.txt
     
     Train Set Distribution: True: 1521 / False 928
+  
     Dev Set Distribution:   True: 178 / False 128
+  
     Test Set Distribution:  True  189 / False 118
 
 
