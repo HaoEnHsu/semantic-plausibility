@@ -1,10 +1,8 @@
 Modeling Semantic Plausibility Project
 
-Data Analysis:
+Data Analysis
 
 Dataset: Pep3K
-
-15 features to be analyzed:
 
 Basic features of data:
 
