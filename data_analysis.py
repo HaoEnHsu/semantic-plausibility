@@ -1,11 +1,10 @@
 import pandas as pd
 import matplotlib.pyplot as plt # allows making plots
+import nltk # used for wordnet
 from collections import Counter
 from sklearn.metrics import cohen_kappa_score
-
-import nltk # used for wordnet
 from nltk.corpus import wordnet as wn
-
+from nltk import ngrams
 
 # Hey wait, download WordNet if you don't have it, otherwise comment out ine belows, you only have to do once
 nltk.download('omw-1.4')
@@ -164,7 +163,14 @@ def analyze_concreteness(vocabulary):
     # print("\nAbstract words found:")
     # print(", ".join(abstract_words))
 
+# Function to generate and count n-grams, used in 7 and 10
+def generate_and_count_ngrams(texts, n):
+    ngrams_list = [ngram for text in texts for ngram in ngrams(text.split(), n)]
+    return Counter(ngrams_list)
 
+# Function to get unique n-grams, used in 7
+def unique_ngrams(ngram_counts):
+    return list(ngram_counts.keys())
 
 
 #load files
@@ -273,6 +279,22 @@ print("Number of OOV words in dev set:",len(oov_dev), "\nDev OOV Percentage:",le
 print("Words in test set that do not appear in train set:", oov_test)
 print("Number of OOV words in test set:",len(oov_test), "\nTest OOV Percentage:",len(oov_test)/len(vocabulary_test)) #Output: 12, 0.038
 
+# 7. n-grams; the count of unique bigrams and trigrams
+
+results = {}   # Dictionary to store results
+datasets = {'train': train_data['text'], 'test': test_data['text'], 'dev': dev_data['text']}
+
+# Process each dataset
+for name, texts in datasets.items():
+    results[f'{name}_bigrams'] = generate_and_count_ngrams(texts, 2)
+    results[f'{name}_trigrams'] = generate_and_count_ngrams(texts, 3)
+    results[f'unique_{name}_bigrams'] = unique_ngrams(results[f'{name}_bigrams'])
+    results[f'unique_{name}_trigrams'] = unique_ngrams(results[f'{name}_trigrams'])
+
+# Print unique n-gram counts
+for name in datasets.keys():
+    print(f"number of unique {name} bigram:", len(results[f'unique_{name}_bigrams']))
+    print(f"number of unique {name} trigram:", len(results[f'unique_{name}_trigrams']))
 
 # 8. Zipf's law, graph of term frequency
 print('8. Zipfs law graph/comparing the data splits(mostly done in 1-5)\n')
@@ -375,4 +397,3 @@ print('Terms:')
 analyze_concreteness(combined_vocab)
 print('Tokens:')
 analyze_concreteness(combined_tokens)
-
