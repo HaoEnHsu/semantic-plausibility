@@ -19,25 +19,58 @@ def calculate_vocab_statistics(data):
     sorted_word_counts = sorted(token_counts.values(), reverse=True)
     return list_tokens, num_tokens, vocab, sorted_word_counts
 
-def analyze_concreteness(vocabulary): #wordnet is lexical database with words grouped into sets of synonyms that are connected by various relationships
-    #such as hypernyms, hyponyms, meronyms, and holonyms, these relationships are indirectly leveraged to infer abstractness
+def is_abstract_word(word): #wordnet is lexical database with words grouped into sets of synonyms that are connected by various relationships
+    # such as hypernyms, hyponyms, meronyms, and holonyms, these relationships are indirectly leveraged to infer abstractness
+    synsets = wn.synsets(word) # check if word in synsets, a set of cognitive synonyms
+    if not synsets:
+        return False
+    # If any synset is an adjective, mark as abstract (only applies to a very small percentage of this dataset, ~2%)
+    if any('a' in s.pos() for s in synsets):
+        return True
+    abstract_keywords = ['idea', 'concept', 'state', 'quality'] # list of keywords associated with abstract concepts
+    for synset in synsets: # if keyword in def or example of synset, marked as abstract
+        definition = synset.definition()
+        examples = synset.examples()
+        if any(keyword in definition for keyword in abstract_keywords):
+            return True
+        if any(keyword in ' '.join(examples) for keyword in abstract_keywords):
+            return True
+    abstract_hypernyms = {'attribute', 'property', 'state', 'quality'} # set of abstract hypernyms
+    # hypernym: word more generic or abstract than its subordinates or hyponyms
+    for synset in synsets:
+        hypernyms = synset.hypernyms() # if hypernyn in synset, marked as abstract
+        while hypernyms:
+            hypernym_names = {hypernym.name().split('.')[0] for hypernym in hypernyms}
+            if abstract_hypernyms & hypernym_names:
+                return True
+            hypernyms = [h for hypernym in hypernyms for h in hypernym.hypernyms()]
+    return False
+
+
+def analyze_concreteness(vocabulary):
     abstract_count = 0
     concrete_count = 0
-    for word in vocabulary:
-        synsets = wn.synsets(word) # synsets means sets of cognitive synonyms, retrieves them for given word
-        if synsets:
-            # Check if any synset of the word is an adjective, if it is, is assumed to be abstract, vast oversimplification
-            # however, looking at the dataset, it IS almost impossible to find an abstract word, so I'm not sure how to target the abstract words that are there
-            is_abstract = any('a' in s.pos() for s in synsets)
-            if is_abstract:
-                abstract_count += 1
-            else:
-                concrete_count += 1
+    not_in_wordnet_count = 0
+    abstract_words = []
+    for word in vocabulary: # loop putting each word in category
+        synsets = wn.synsets(word)
+        if not synsets:
+            not_in_wordnet_count += 1
+        elif is_abstract_word(word):
+            abstract_count += 1
+            abstract_words.append(word)
+        else:
+            concrete_count += 1
     total_words = len(vocabulary)
     abstract_percentage = (abstract_count / total_words) * 100
     concrete_percentage = (concrete_count / total_words) * 100
-    print("Abstract words: {:.2f}%".format(abstract_percentage))
+    not_in_wordnet_percentage = (not_in_wordnet_count / total_words) * 100
+    print("Words that can be abstract: {:.2f}%".format(abstract_percentage))
     print("Concrete words: {:.2f}%".format(concrete_percentage))
+    print("Words not in WordNet: {:.2f}%".format(not_in_wordnet_percentage))
+    print("\nAbstract words found:")
+    print(", ".join(abstract_words))
+
 
 
 #load files
