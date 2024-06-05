@@ -36,7 +36,7 @@ dev_data = pd.read_csv('dev.csv')
 
 
 
-# 14. commonsense knowledge (python package, conceptnet)
+# 14. Commonsense knowledge evaluation using conceptnet
 print('\n14. Commonsense knowledge evaluation using ConceptNet:')
 true, false = test_commonsense(train_data)
 print('Number of subject-object pairs in dataset related by any relation in ConceptNet:', true)
