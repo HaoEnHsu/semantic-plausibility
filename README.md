@@ -21,7 +21,7 @@ Linguistic Characteristics:
    - we used two different POS taggers: average perceptron tagger from NLTK (1/6 of the tokens are tagged as JJ) and  
      en_core_web_sm from spacy; and we chose to keep the results from spacy
    - library/packages used: pandas, matplotlib, spacy
-7. Number of times words appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). SERGEI
+7. Number of words that appear in the dataset as both subject and object (S-O), subject and verb (S-V), verb and object (V-O). SERGEI
 
    S-O Train: 157
    S-O Dev: 61
