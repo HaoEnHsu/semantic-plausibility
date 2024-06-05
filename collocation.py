@@ -1,39 +1,33 @@
 import pandas as pd
-import nltk
 from collections import Counter
 import matplotlib.pyplot as plt
 from nltk.corpus import brown
+import nltk
+from data_analysis import generate_and_count_ngrams
 
 # Download necessary NLTK data
 nltk.download('brown')
 nltk.download('punkt')
 
-# Load dataset
+# Load dataset (reusing the same datasets loaded in ngram.py)
 train_data = pd.read_csv('train.csv')
 test_data = pd.read_csv('test.csv')
 dev_data = pd.read_csv('dev.csv')
 
-# Concatenate all texts into a single list
+# Combine text data from all datasets
 all_texts = pd.concat([train_data['text'], test_data['text'], dev_data['text']]).tolist()
 
-# Function to generate bigrams
-def generate_bigrams(texts):
-    bigrams = []
-    for text in texts:
-        tokens = nltk.word_tokenize(text)
-        bigrams.extend(nltk.bigrams(tokens))
-    return bigrams
+# Load generated bigrams from ngram.py results
+train_bigrams = generate_and_count_ngrams(train_data['text'], 2)
+test_bigrams = generate_and_count_ngrams(test_data['text'], 2)
+dev_bigrams = generate_and_count_ngrams(dev_data['text'], 2)
 
-# Generate bigrams for the dataset
-dataset_bigrams = generate_bigrams(all_texts)
-
-# Calculate bigram frequencies in the dataset
+# Merge all bigrams from all datasets
+dataset_bigrams = list(train_bigrams.elements()) + list(test_bigrams.elements()) + list(dev_bigrams.elements())
 dataset_bigram_freq = Counter(dataset_bigrams)
 
 # Generate bigrams from the Brown corpus
 brown_bigrams = list(nltk.bigrams(brown.words()))
-
-# Calculate bigram frequencies in the Brown corpus
 brown_bigram_freq = Counter(brown_bigrams)
 
 # Function to get frequency of a bigram in the Brown corpus
