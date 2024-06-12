@@ -2,6 +2,14 @@ import pandas as pd
 from transformers import BertTokenizer, BertModel
 import torch
 
+import numpy as np
+import matplotlib.pyplot as plt
+
+from sklearn.neighbors import KNeighborsClassifier
+# from sklearn.model_selection import train_test_split
+from sklearn.metrics import accuracy_score
+from sklearn.metrics import f1_score
+
 def get_sentence_embeddings(text_list, batch_size=32):
     all_embeddings = []
 
@@ -47,7 +55,6 @@ tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertModel.from_pretrained('bert-base-uncased')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
 # Get train embeddings
@@ -55,4 +62,43 @@ train_sentence_embeddings = get_sentence_embeddings(train_strings)
 print("Train sentence embeddings shape:", train_sentence_embeddings.shape)
 torch.save(train_sentence_embeddings, "train_sentence_embeddings.pt")
 loaded_embeddings = torch.load("train_sentence_embeddings.pt")
-print(train_sentence_embeddings)
+# print(train_sentence_embeddings)
+
+# Get test embeddings
+test_sentence_embeddings = get_sentence_embeddings(test_strings)
+
+# KNN Classifier 
+knn1 = KNeighborsClassifier(n_neighbors=1)
+knn5 = KNeighborsClassifier(n_neighbors=5)
+knn9 = KNeighborsClassifier(n_neighbors=9)
+
+
+X_train = train_sentence_embeddings
+y_train = list(train_data['label'])
+
+X_test = test_sentence_embeddings
+y_test = list(test_data['label'])
+
+# Train KNN
+
+knn1.fit(X_train, y_train)
+knn5.fit(X_train, y_train)
+knn9.fit(X_train, y_train)
+
+# Predict 
+y_pred_5 = knn5.predict(X_test)
+y_pred_1 = knn1.predict(X_test)
+y_pred_9 = knn9.predict(X_test)
+
+# print(y_pred_1)
+# print(y_pred_5)
+
+# Print accuracy
+print("Accuracy with k=5", accuracy_score(y_test, y_pred_5)*100)
+print("Accuracy with k=1", accuracy_score(y_test, y_pred_1)*100)
+print("Accuracy with k=9", accuracy_score(y_test, y_pred_9)*100)
+
+# Print F1 score
+print("F1-Score with k=1", f1_score(y_test, y_pred_1))
+print("F1-Score with k=5", f1_score(y_test, y_pred_5))
+print("F1-Score with k=9", f1_score(y_test, y_pred_9))
