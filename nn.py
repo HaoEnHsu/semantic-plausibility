@@ -6,12 +6,13 @@ import torch.optim as optim
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.metrics import f1_score
 import matplotlib.pyplot as plt
+import numpy as np
 
 
 class FNN(nn.Module):
     def __init__(self):
         super(FNN, self).__init__()
-        self.fc1 = nn.Linear(768, 120)  # 768 is BERT's embedding size
+        self.fc1 = nn.Linear(769, 120)  # 768 is BERT's embedding size
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(120, 1)
 
@@ -90,20 +91,25 @@ def get_sentence_embeddings(text_list, tokenizer, bert_model, device, batch_size
 def get_strings(dataframe):
     return dataframe['text'].tolist()
 
+def load_data(file_path):
+    data = pd.read_csv(file_path, header=None)
+    texts = data[1].tolist()
+    features = data[[2]].values
+    labels = data[0].values
+    return texts, features, labels
+
 
 # Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load files
-custom_headers = ['label', 'text']
-train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
-test_data = pd.read_csv('test.csv', skiprows=1, header=None, names=custom_headers)
-dev_data = pd.read_csv('dev.csv', skiprows=1, header=None, names=custom_headers)
+train_data = pd.read_csv('train.csv', header=None)
+test_data = pd.read_csv('test.csv', header=None)
+dev_data = pd.read_csv('dev.csv', header=None)
 
-# Extract labels
-y_train = torch.tensor(train_data['label'].values)
-y_test = torch.tensor(test_data['label'].values)
-y_dev = torch.tensor(dev_data['label'].values)
+train_texts, train_features, y_train = load_data('train_labeled.csv')
+test_texts, test_features, y_test = load_data('test_labeled.csv')
+dev_texts, dev_features, y_dev = load_data('dev_labeled.csv')
 
 '''
 # Ensure the labels and texts are paired correctly
@@ -135,19 +141,39 @@ train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
 dev_sentence_embeddings = torch.load("dev_sentence_embeddings.pt")
 test_sentence_embeddings = torch.load("test_sentence_embeddings.pt")
 
+# Concatenate 'an' vectors with corresponding BERT embeddings
+train_combined_embeddings = np.concatenate((train_sentence_embeddings.numpy(), train_features), axis=1)
+test_combined_embeddings = np.concatenate((test_sentence_embeddings.numpy(), test_features), axis=1)
+dev_combined_embeddings = np.concatenate((dev_sentence_embeddings.numpy(), dev_features), axis=1)
+
+# Check the shape of the concatenated embeddings
+print("Train combined embeddings shape:", train_combined_embeddings.shape)
+print("Dev combined embeddings shape:", dev_combined_embeddings.shape)
+print("Test combined embeddings shape:", test_combined_embeddings.shape)
+print(test_combined_embeddings)
+
+# Convert to float32 before converting to tensors
+train_combined_embeddings = torch.tensor(train_combined_embeddings, dtype=torch.float32)
+test_combined_embeddings = torch.tensor(test_combined_embeddings, dtype=torch.float32)
+dev_combined_embeddings = torch.tensor(dev_combined_embeddings, dtype=torch.float32)
+
+# Convert labels to tensors
+y_train_tensor = torch.tensor(y_train, dtype=torch.float32)
+y_dev_tensor = torch.tensor(y_dev, dtype=torch.float32)
+y_test_tensor = torch.tensor(y_test, dtype=torch.float32)
+
 # Create TensorDatasets and DataLoaders
-train_dataset = TensorDataset(train_sentence_embeddings, y_train)
+train_dataset = TensorDataset(train_combined_embeddings, y_train_tensor)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
-dev_dataset = TensorDataset(dev_sentence_embeddings, y_dev)
+dev_dataset = TensorDataset(dev_combined_embeddings, y_dev_tensor)
 dev_loader = DataLoader(dev_dataset, batch_size=16, shuffle=False)
 
-test_dataset = TensorDataset(test_sentence_embeddings, y_test)
+test_dataset = TensorDataset(test_combined_embeddings, y_test_tensor)
 test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 # Initialize and train the model
 model = FNN()
-'''
 loss_history = model.train_model(train_loader, device, num_epochs=1250)
 torch.save(model.state_dict(), 'fnn_model2.pth')
 
@@ -157,10 +183,10 @@ plt.xlabel('Epochs')
 plt.ylabel('Loss')
 plt.title('Training Loss Curve')
 plt.show()
-'''
+
 # load model
-model.load_state_dict(torch.load('fnn_model.pth'))
-model.to(device)
+#model.load_state_dict(torch.load('fnn_model.pth'))
+#model.to(device)
 
 # Evaluate the model
 model.eval_model(dev_loader, device,'Dev Dataset')
