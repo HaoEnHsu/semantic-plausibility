@@ -44,11 +44,13 @@ custom_headers = ['label','text','anim_s','anim_o']
 train_data = pd.read_csv('train.csv',skiprows=1, header=None, names=custom_headers)
 test_data = pd.read_csv('test.csv', skiprows=1, header=None, names=custom_headers)
 dev_data = pd.read_csv('dev.csv', skiprows=1, header=None, names=custom_headers)
+train_augmented_data = pd.read_csv('data_augmented.csv',skiprows=1, header=None, names=custom_headers)
 
 # get strings from data to make BERT embeddings
 train_strings = get_strings(train_data)
 test_strings = get_strings(test_data)
 dev_strings = get_strings(dev_data)
+train_augmented_strings = get_strings(train_augmented_data)
 
 # BERT
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -58,10 +60,11 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
 # Get train embeddings
-train_sentence_embeddings = get_sentence_embeddings(train_strings)
+train_augmented_sentence_embeddings = get_sentence_embeddings(train_augmented_strings)
+# train_sentence_embeddings = get_sentence_embeddings(train_strings)
 # print("Train sentence embeddings shape:", train_sentence_embeddings.shape)
-# torch.save(train_sentence_embeddings, "train_sentence_embeddings.pt")
-# loaded_embeddings = torch.load("train_sentence_embeddings.pt")
+# torch.save(train_augmented_sentence_embeddings, "train_augmented_sentence_embeddings.pt")
+loaded_embeddings = torch.load("train_augmented_sentence_embeddings.pt")
 # print(train_sentence_embeddings)
 
 # # Get test embeddings
@@ -117,9 +120,9 @@ for i in dev_features:
 
 
 # Adding animacy features to BERT embeddings
-train_features_combined = np.concatenate((train_sentence_embeddings, new_train_features),axis=1)
-test_features_combined = np.concatenate((test_sentence_embeddings, new_test_features), axis=1)
-dev_features_combined = np.concatenate((dev_sentence_embeddings, new_dev_features), axis=1)
+# train_features_combined = np.concatenate((train_sentence_embeddings, new_train_features),axis=1)
+# test_features_combined = np.concatenate((test_sentence_embeddings, new_test_features), axis=1)
+# dev_features_combined = np.concatenate((dev_sentence_embeddings, new_dev_features), axis=1)
 # print(test_features_combined)
 
 
@@ -131,16 +134,18 @@ knn7 = KNeighborsClassifier(n_neighbors=7,metric='manhattan')
 knn9 = KNeighborsClassifier(n_neighbors=9,metric='manhattan')
 knn11 = KNeighborsClassifier(n_neighbors=11,metric='manhattan')
 
+X_train = loaded_embeddings
+y_train = list(train_augmented_data['label'])
 # X_train = train_sentence_embeddings
-X_train = train_features_combined
-y_train = list(train_data['label'])
+# X_train = train_features_combined
+# y_train = list(train_data['label'])
 
-# X_test = test_sentence_embeddings
-X_test = test_features_combined
+X_test = test_sentence_embeddings
+# X_test = test_features_combined
 y_test = list(test_data['label'])
 
-# X_dev = dev_sentence_embeddings
-X_dev = dev_features_combined
+X_dev = dev_sentence_embeddings
+# X_dev = dev_features_combined
 y_dev = list(dev_data['label'])
 
 # Train KNN
@@ -184,39 +189,39 @@ y_prob9_test = knn9.predict_proba(X_test)[:, 1]
 y_prob11_test = knn11.predict_proba(X_test)[:, 1]
 
 # Print accuracy dev
-# print("Accuracy DEV with k=1", accuracy_score(y_dev, y_pred_dev_1))
-# print("Accuracy DEV with k=3", accuracy_score(y_dev, y_pred_dev_3))
-# print("Accuracy DEV with k=5", accuracy_score(y_dev, y_pred_dev_5))
-# print("Accuracy DEV with k=7", accuracy_score(y_dev, y_pred_dev_7))
+print("Accuracy DEV with k=1", accuracy_score(y_dev, y_pred_dev_1))
+print("Accuracy DEV with k=3", accuracy_score(y_dev, y_pred_dev_3))
+print("Accuracy DEV with k=5", accuracy_score(y_dev, y_pred_dev_5))
+print("Accuracy DEV with k=7", accuracy_score(y_dev, y_pred_dev_7))
 print("Accuracy DEV with k=9", accuracy_score(y_dev, y_pred_dev_9))
-# print("Accuracy DEV with k=11", accuracy_score(y_dev, y_pred_dev_11))
+print("Accuracy DEV with k=11", accuracy_score(y_dev, y_pred_dev_11))
  
 
 # Print F1 score dev
-# print("F1-Score DEV with k=1", f1_score(y_dev, y_pred_dev_1))
-# print("F1-Score DEV with k=3", f1_score(y_dev, y_pred_dev_3))
-# print("F1-Score DEV with k=5", f1_score(y_dev, y_pred_dev_5))
-# print("F1-Score DEV with k=7", f1_score(y_dev, y_pred_dev_7))
+print("F1-Score DEV with k=1", f1_score(y_dev, y_pred_dev_1))
+print("F1-Score DEV with k=3", f1_score(y_dev, y_pred_dev_3))
+print("F1-Score DEV with k=5", f1_score(y_dev, y_pred_dev_5))
+print("F1-Score DEV with k=7", f1_score(y_dev, y_pred_dev_7))
 print("F1-Score DEV with k=9", f1_score(y_dev, y_pred_dev_9))
-# print("F1-Score DEV with k=11", f1_score(y_dev, y_pred_dev_11))
+print("F1-Score DEV with k=11", f1_score(y_dev, y_pred_dev_11))
 
 
 # Print accuracy test
-# print("Accuracy TEST with k=1", accuracy_score(y_test, y_pred_test_1))
-# print("Accuracy TEST with k=3", accuracy_score(y_test, y_pred_test_3))
-# print("Accuracy TEST with k=5", accuracy_score(y_test, y_pred_test_5))
-# print("Accuracy TEST with k=7", accuracy_score(y_test, y_pred_test_7))
+print("Accuracy TEST with k=1", accuracy_score(y_test, y_pred_test_1))
+print("Accuracy TEST with k=3", accuracy_score(y_test, y_pred_test_3))
+print("Accuracy TEST with k=5", accuracy_score(y_test, y_pred_test_5))
+print("Accuracy TEST with k=7", accuracy_score(y_test, y_pred_test_7))
 print("Accuracy TEST with k=9", accuracy_score(y_test, y_pred_test_9))
-# print("Accuracy TEST with k=11", accuracy_score(y_test, y_pred_test_11))
+print("Accuracy TEST with k=11", accuracy_score(y_test, y_pred_test_11))
  
 
 # Print F1 score test
-# print("F1-Score TEST with k=1", f1_score(y_test, y_pred_test_1))
-# print("F1-Score TEST with k=3", f1_score(y_test, y_pred_test_3))
-# print("F1-Score TEST with k=5", f1_score(y_test, y_pred_test_5))
-# print("F1-Score TEST with k=7", f1_score(y_test, y_pred_test_7))
+print("F1-Score TEST with k=1", f1_score(y_test, y_pred_test_1))
+print("F1-Score TEST with k=3", f1_score(y_test, y_pred_test_3))
+print("F1-Score TEST with k=5", f1_score(y_test, y_pred_test_5))
+print("F1-Score TEST with k=7", f1_score(y_test, y_pred_test_7))
 print("F1-Score TEST with k=9", f1_score(y_test, y_pred_test_9))
-# print("F1-Score TEST with k=11", f1_score(y_test, y_pred_test_11))
+print("F1-Score TEST with k=11", f1_score(y_test, y_pred_test_11))
 
 # Print AUC-ROC
 
