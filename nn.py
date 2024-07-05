@@ -12,7 +12,8 @@ import numpy as np
 class FNN(nn.Module):
     def __init__(self):
         super(FNN, self).__init__()
-        self.fc1 = nn.Linear(769, 120)  # 768 is BERT's embedding size
+        # self.fc1 = nn.Linear(769, 120)  # 768 is BERT's embedding size
+        self.fc1 = nn.Linear(768, 120)  # 768 is BERT's embedding size
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(120, 1)
 
@@ -106,6 +107,7 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 train_data = pd.read_csv('train.csv', header=None)
 test_data = pd.read_csv('test.csv', header=None)
 dev_data = pd.read_csv('dev.csv', header=None)
+train_augmented_data = pd.read_csv('data_augmented.csv',skiprows=1, header=None)
 
 train_texts, train_features, y_train = load_data('train_labeled.csv')
 test_texts, test_features, y_test = load_data('test_labeled.csv')
@@ -137,7 +139,8 @@ torch.save(dev_sentence_embeddings, "dev_sentence_embeddings.pt")
 torch.save(test_sentence_embeddings, "test_sentence_embeddings.pt")
 
 '''
-train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
+train_augmented_sentence_embeddings = torch.load("train_augmented_sentence_embeddings.pt")
+# train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
 dev_sentence_embeddings = torch.load("dev_sentence_embeddings.pt")
 test_sentence_embeddings = torch.load("test_sentence_embeddings.pt")
 
@@ -163,8 +166,12 @@ y_dev_tensor = torch.tensor(y_dev, dtype=torch.float32)
 y_test_tensor = torch.tensor(y_test, dtype=torch.float32)
 
 # Create TensorDatasets and DataLoaders
+
 train_dataset = TensorDataset(train_combined_embeddings, y_train_tensor)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+
+# train_dataset = TensorDataset(train_combined_embeddings, y_train_tensor)
+# train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 dev_dataset = TensorDataset(dev_combined_embeddings, y_dev_tensor)
 dev_loader = DataLoader(dev_dataset, batch_size=16, shuffle=False)
