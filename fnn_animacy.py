@@ -198,7 +198,7 @@ plt.legend()
 plt.show()
 '''
 # Load model
-model.load_state_dict(torch.load('fnn_model3.pth'))
+model.load_state_dict(torch.load('fnn_w_animacy_model.pth'))
 model.to(device)
 
 # Evaluate the model

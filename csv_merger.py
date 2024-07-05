@@ -44,3 +44,7 @@ train_add = 'train.csv'
 #         for i in new_test_file:
 #         # for i in train_add:
 #             merged_file.write(i)
+
+train_augmented_data = pd.read_csv('data_augmented.csv')
+
+print(len(train_augmented_data['label'].values))

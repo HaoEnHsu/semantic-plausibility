@@ -21,13 +21,14 @@ class FNN(nn.Module):
         out = torch.sigmoid(out)
         return out
 
-    def train_model(self, train_loader, device, num_epochs):
+    def train_model(self, train_loader, device, num_epochs, dev_loader):
         self.to(device)
         criterion = nn.BCELoss()  # BCELoss since sigmoid is included in forward
-        optimizer = optim.Adam(self.parameters(), lr=0.001)
+        optimizer = optim.Adam(self.parameters(), lr=0.002)
         self.train()
 
         loss_history = []  # To store the loss at each epoch
+        val_loss_history = []
 
         for epoch in range(num_epochs):
             running_loss = 0.0
@@ -43,7 +44,11 @@ class FNN(nn.Module):
             loss_history.append(epoch_loss)
             print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss}")
 
-        return loss_history
+            val_loss, val_f1, val_accuracy, val_auc, _, _ = self.eval_model(dev_loader, device, dataset_name='Validation')
+            val_loss_history.append(val_loss)
+            print(f"Epoch {epoch + 1}/{num_epochs}, Validation Loss: {val_loss}, Validation F1 Score: {val_f1}, Validation Accuracy: {val_accuracy}, Validation AUC: {val_auc}")
+
+        return loss_history, val_loss_history
 
     def predict(self, X_test_tensor, device):
         self.eval()
@@ -101,22 +106,28 @@ device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
 # Load files
 custom_headers = ['label', 'text']
-train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
+# train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
 test_data = pd.read_csv('test.csv', skiprows=1, header=None, names=custom_headers)
 dev_data = pd.read_csv('dev.csv', skiprows=1, header=None, names=custom_headers)
+train_augmented_data = pd.read_csv('data_augmented.csv',skiprows=1, header=None,names=custom_headers)
 
 # Extract labels
-y_train = torch.tensor(train_data['label'].values)
+# y_train = torch.tensor(train_data['label'].values)
 y_test = torch.tensor(test_data['label'].values)
 y_dev = torch.tensor(dev_data['label'].values)
+y_train = torch.tensor(train_augmented_data['label'].values)
 
 # Load precomputed embeddings
-train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
+# train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
 dev_sentence_embeddings = torch.load("dev_sentence_embeddings.pt")
 test_sentence_embeddings = torch.load("test_sentence_embeddings.pt")
+train_augmented_sentence_embeddings = torch.load("train_augmented_sentence_embeddings.pt")
 
 # Create TensorDatasets and DataLoaders
-train_dataset = TensorDataset(train_sentence_embeddings, y_train)
+# train_dataset = TensorDataset(train_sentence_embeddings, y_train)
+# train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
+
+train_dataset = TensorDataset(train_augmented_sentence_embeddings, y_train)
 train_loader = DataLoader(train_dataset, batch_size=16, shuffle=True)
 
 dev_dataset = TensorDataset(dev_sentence_embeddings, y_dev)
@@ -127,19 +138,24 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 
 # Initialize and train the model (if training is needed)
 model = FNN()
-'''
-loss_history = model.train_model(train_loader, device, num_epochs=1250)
-torch.save(model.state_dict(), 'fnn_model2.pth')
-plt.plot(range(1, len(loss_history) + 1), loss_history)
+
+# Comment out from this line to plt.show() when you want to load an already trained model
+loss_history, val_loss_history = model.train_model(train_loader, device, num_epochs=300, dev_loader=dev_loader)
+torch.save(model.state_dict(), 'fnn_model5.pth')
+
+# Plot the loss curve
+plt.plot(range(1, len(loss_history) + 1), loss_history, label='Training Loss')
+plt.plot(range(1, len(val_loss_history) + 1), val_loss_history, label='Validation Loss')
 plt.xlabel('Epochs')
 plt.ylabel('Loss')
-plt.title('Training Loss Curve')
+plt.title('Training and Validation Loss Curve')
+plt.legend()
 plt.show()
-'''
 
+# Uncomment out when you want to load an already trained model
 # Load trained model (if training was done previously)
-model.load_state_dict(torch.load('fnn_model.pth'))
-model.to(device)
+# model.load_state_dict(torch.load('fnn_baseline_model.pth'))
+# model.to(device)
 
 # Evaluate the model and plot ROC curves
 dev_loss, dev_f1, dev_accuracy, dev_auc, dev_fpr, dev_tpr = model.eval_model(dev_loader, device, 'Dev Dataset')
