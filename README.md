@@ -22,6 +22,7 @@ Hyperparameters: k=9, distance='manhattan'. Other k numbers and distances have b
 The model's settings are preselected to showing the results for the original data and separated animacy features added, as it has the highest AUC-ROC score. If you want to see the results for other options, please follow the multistring instructions in knn.py.
 
 **FNN**
+
 To run:
 
 Simply run the files. This will give you the evaluation on the already saved models.
@@ -40,22 +41,22 @@ To retrain the BERT embeddings:
 If you would like to run our BERT embeddings, go to the large section of commented out Bert embeddings and uncomment it. Look and make sure that you are running on the desired training data, there is one for augmented training data and the original training data.
 
 With separated animacy feature:
--Test Set: Accuracy: 0.6449
--Dev Set: Accuracy: 0.6111
+- Test Set: Accuracy: 0.6449
+- Dev Set: Accuracy: 0.6111
 
 This is the FNN with two animacy features added. Two features added, one for object and one for subject. 1 if animate, 0 if inanimate.
 This can also be trained on augmented data set but it decreases performance.
 
 With concatenated animacy feature:
--Test Set: Accuracy: 0.7068
--Dev Set: Accuracy: 0.7026
+- Test Set: Accuracy: 0.7068
+- Dev Set: Accuracy: 0.7026
 
 This is the FNN with one animacy feature added. If an animate subject or object is present in the data instance, feature is 1, if more than 1, 2, if no animacy present 0.
 This can also be trained on augmented data set but it decreases performance.
 
 Without animacy feature:
--Test Set: Accuracy: 0.6871
--Dev Set: Accuracy: 0.6993
+- Test Set: Accuracy: 0.6871
+- Dev Set: Accuracy: 0.6993
 
 This is the baseline FFN. It has been trained without the extra anaimcy feature on the original data set. It can also be run on the augmented data, but performance goes down.
 
