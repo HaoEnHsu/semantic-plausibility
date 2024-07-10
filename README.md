@@ -85,7 +85,7 @@ Without animacy feature:
 - Dev data F1 Score: 0.5764 ; Accuracy: 0.6013 ; AUC-ROC score: 0.6013
 - Test data F1 Score: 0.5390 ; Accuracy: 0.5375 ; AUC-ROC score: 0.5375
 
-**FFN**
+**FNN**
 
 With separated animacy feature: fnn_2animacy.py
 
