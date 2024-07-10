@@ -25,7 +25,7 @@ def load_data(file_path):
 
 
 # Load datasets, uncomment line 28 and comment line 31 out if train on original data
-# train_texts, train_features, train_labels = load_data('data_augmented_a.csv')
+# train_texts, train_features, train_labels = load_data('train_labeled.csv')
 test_texts, test_features, test_labels = load_data('test_labeled.csv')
 dev_texts, dev_features, dev_labels = load_data('dev_labeled.csv')
 train_texts, train_features, train_labels = load_data('data_augmented_a.csv')
