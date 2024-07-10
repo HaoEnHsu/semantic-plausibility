@@ -11,9 +11,9 @@ Setting up the virtual environment:
 
   python3 -m venv msp
   
-  ./msp/Scripts/activate (for Mac)
+  source msp/bin/activate (for Mac)
 
-  or .\msp\Scripts\activate (for Windows)
+  or ./msp/Scripts/activate (for Windows)
   and
   
   pip install -r requirements.txt
