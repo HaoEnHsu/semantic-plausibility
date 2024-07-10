@@ -179,8 +179,8 @@ dev_accuracy = evaluate_accuracy(dev_labels, dev_predicted_labels)
 test_auc_roc = evaluate_auc_roc(test_labels, test_predicted_labels)
 dev_auc_roc = evaluate_auc_roc(dev_labels, dev_predicted_labels)
 
-print(f"Test F1-score: {test_f1:.4f}, Accuracy: {test_accuracy:.4f}, AUC-ROC: {test_auc_roc:.4f}")
-print(f"Dev F1-score: {dev_f1:.4f}, Accuracy: {dev_accuracy:.4f}, AUC-ROC: {dev_auc_roc:.4f}")
+print(f"Test F1-score (Combined Animacy Features): {test_f1:.4f}, Accuracy: {test_accuracy:.4f}, AUC-ROC: {test_auc_roc:.4f}")
+print(f"Dev F1-score (Combined Animacy Features): {dev_f1:.4f}, Accuracy: {dev_accuracy:.4f}, AUC-ROC: {dev_auc_roc:.4f}")
 
 
 def plot_roc_curve(true_labels, predicted_labels, dataset_name):
