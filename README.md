@@ -7,13 +7,13 @@ Shawn:
 
 K-means:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.5784 ; Accuracy: 0.6046 ; AUC-ROC score: 0.6046
+- Test data F1 Score: 0.5068 ; Accuracy: 0.5244 ; AUC-ROC score: 0.5243
   
 Random Forest: 
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.6222 ; Accuracy: 0.6111 ; AUC-ROC score: 0.6583
+- Test data F1 Score: 0.6144 ; Accuracy: 0.6156 ; AUC-ROC score: 0.6634
   
 BERT:
 
@@ -24,13 +24,13 @@ BERT:
 
 K-means:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.5764 ; Accuracy: 0.6013 ; AUC-ROC score: 0.6013
+- Test data F1 Score: 0.5068 ; Accuracy: 0.5244 ; AUC-ROC score: 0.5243
   
 Random Forest: 
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.6076 ; Accuracy: 0.5948 ; AUC-ROC score: 0.6523
+- Test data F1 Score: 0.6267 ; Accuracy: 0.6352 ; AUC-ROC score: 0.6742
   
 BERT:
 
@@ -41,13 +41,13 @@ BERT:
 
 K-means:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.5764 ; Accuracy: 0.6013 ; AUC-ROC score: 0.6013
+- Test data F1 Score: 0.5390 ; Accuracy: 0.5375 ; AUC-ROC score: 0.5375
   
 Random Forest: 
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.6149 ; Accuracy: 0.6111 ; AUC-ROC score: 0.6670
+- Test data F1 Score: 0.6; Accuracy: 0.5961 ; AUC-ROC score: 0.6275
   
 BERT:
 
@@ -69,7 +69,6 @@ requirement.txt
      
 2. Overview:
    
-4. Run the following command to execute the program and get the evaluation results as well as the predictions for the appropriate data:
-   `python3 main.py`
+3. To get the models work, simply run the files.
 
 
