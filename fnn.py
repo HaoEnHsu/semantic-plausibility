@@ -190,7 +190,7 @@ y_test = torch.tensor(test_data['label'].values)
 y_dev = torch.tensor(dev_data['label'].values)
 y_train = torch.tensor(train_data['label'].values)
 
-# 1. Load precomputed BERT embeddings, to use train data, switch train files
+# 1. Load precomputed BERT embeddings, to use train data, switch train files, last thing
 train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
 #train_sentence_embeddings = torch.load("train_augmented_sentence_embeddings.pt")
 dev_sentence_embeddings = torch.load("dev_sentence_embeddings.pt")
