@@ -6,7 +6,18 @@ from sklearn.metrics import accuracy_score, roc_auc_score, roc_curve, auc, f1_sc
 from sklearn.ensemble import RandomForestClassifier
 import matplotlib.pyplot as plt
 
+
 def get_sentence_embeddings(text_list, batch_size=32):
+    """
+    Generates sentence embeddings for a list of texts using a BERT model.
+
+    Parameters:
+    text_list (list): List of strings to generate embeddings for.
+    batch_size (int): Number of texts to process in a batch.
+
+    Returns:
+    torch.Tensor: Tensor containing sentence embeddings.
+    """
     all_embeddings = []
     for i in range(0, len(text_list), batch_size):
         batch = text_list[i:i + batch_size]
@@ -18,33 +29,77 @@ def get_sentence_embeddings(text_list, batch_size=32):
     sentence_embeddings = torch.cat(all_embeddings, dim=0)
     return sentence_embeddings
 
+
 def get_strings(dataframe):
+    """
+    Extracts text data from a dataframe.
+
+    Parameters:
+    dataframe (pd.DataFrame): DataFrame containing text data.
+
+    Returns:
+    list: List of text strings.
+    """
     return dataframe['text'].tolist()
 
+
 def load_data(file_path):
+    """
+    Loads data from a CSV file.
+
+    Parameters:
+    file_path (str): Path to the CSV file.
+
+    Returns:
+    tuple: A tuple containing lists of texts, features, and labels.
+    """
     data = pd.read_csv(file_path, header=None)
     texts = data[1].tolist()
     features = data[[2, 3]].values
     labels = data[0].values
     return texts, features, labels
 
+
 def weight_features(features, weight=20):
+    """
+    Weights and sums feature values.
+
+    Parameters:
+    features (list): List of feature values.
+    weight (int): Weighting factor.
+
+    Returns:
+    list: List of weighted feature sums.
+    """
     return [[sum(f) * weight] for f in features]
 
+
 def evaluate_model(rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev):
+    """
+    Trains and evaluates a RandomForestClassifier.
+
+    Parameters:
+    rf_classifier (RandomForestClassifier): Random forest classifier instance.
+    X_train (np.array): Training data features.
+    y_train (np.array): Training data labels.
+    X_test (np.array): Test data features.
+    y_test (np.array): Test data labels.
+    X_dev (np.array): Development data features.
+    y_dev (np.array): Development data labels.
+
+    Returns:
+    tuple: Evaluation metrics including accuracy, F1 score, ROC-AUC, and ROC curve values.
+    """
     rf_classifier.fit(X_train, y_train)
     y_pred_test = rf_classifier.predict(X_test)
     y_pred_dev = rf_classifier.predict(X_dev)
     
-    # Accuracy
     accuracy_test = accuracy_score(y_test, y_pred_test)
     accuracy_dev = accuracy_score(y_dev, y_pred_dev)
     
-    # F1 score
     f1_test = f1_score(y_test, y_pred_test)
     f1_dev = f1_score(y_dev, y_pred_dev)
     
-    # ROC-AUC
     y_prob_test = rf_classifier.predict_proba(X_test)[:, 1]
     fpr_test, tpr_test, _ = roc_curve(y_test, y_prob_test)
     roc_auc_test = auc(fpr_test, tpr_test)
@@ -55,11 +110,13 @@ def evaluate_model(rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev
     
     return accuracy_test, accuracy_dev, f1_test, f1_dev, roc_auc_test, roc_auc_dev, fpr_test, tpr_test, fpr_dev, tpr_dev
 
-# Load files
+
+# Load files, uncomment line 60 and comment line 63 out when using the original dataset
 custom_headers = ['label', 'text', 'anim_s', 'anim_o']
-train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
+# train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
 test_data = pd.read_csv('test.csv', skiprows=1, header=None, names=custom_headers)
 dev_data = pd.read_csv('dev.csv', skiprows=1, header=None, names=custom_headers)
+train_data = pd.read_csv('data_augmented_a.csv', skiprows=1, header=None, names=custom_headers)
 
 # Get strings from data to make BERT embeddings
 train_strings = get_strings(train_data)
@@ -92,10 +149,10 @@ accuracy_test, accuracy_dev, f1_test, f1_dev, roc_auc_test, roc_auc_dev, fpr_tes
     rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev
 )
 
-print(f"Test Accuracy (without additional features): {accuracy_test}")
-print(f"Dev Accuracy (without additional features): {accuracy_dev}")
-print(f"Test F1 Score (without additional features): {f1_test}")
-print(f"Dev F1 Score (without additional features): {f1_dev}")
+print(f"Test Accuracy (without animacy features): {accuracy_test}")
+print(f"Dev Accuracy (without animacy features): {accuracy_dev}")
+print(f"Test F1 Score (without animacy features): {f1_test}")
+print(f"Dev F1 Score (without animacy features): {f1_dev}")
 print(f"Test ROC AUC: {roc_auc_test}")
 print(f"Dev ROC AUC: {roc_auc_dev}")
 
@@ -112,7 +169,7 @@ plt.title('RF AUC-ROC without Animacy')
 plt.legend(loc='lower right')
 plt.show()
 
-# Load labeled data for additional features
+# Load labeled data for animacy features
 train_texts, train_features, train_labels = load_data('train_labeled.csv')
 test_texts, test_features, test_labels = load_data('test_labeled.csv')
 dev_texts, dev_features, dev_labels = load_data('dev_labeled.csv')
@@ -127,20 +184,20 @@ train_features_combined = np.concatenate((train_sentence_embeddings, weighted_tr
 test_features_combined = np.concatenate((test_sentence_embeddings, weighted_test_features), axis=1)
 dev_features_combined = np.concatenate((dev_sentence_embeddings, weighted_dev_features), axis=1)
 
-# Evaluate with additional features
+# Evaluate with animacy features
 rf_classifier_with_features = RandomForestClassifier(n_estimators=100, random_state=42)
 accuracy_test_with_features, accuracy_dev_with_features, f1_test_with_features, f1_dev_with_features, roc_auc_test_with_features, roc_auc_dev_with_features, _, _, _, _ = evaluate_model(
     rf_classifier_with_features, train_features_combined, y_train, test_features_combined, y_test, dev_features_combined, y_dev
 )
 
-print(f"Test Accuracy (with additional features): {accuracy_test_with_features}")
-print(f"Dev Accuracy (with additional features): {accuracy_dev_with_features}")
-print(f"Test F1 Score (with additional features): {f1_test_with_features}")
-print(f"Dev F1 Score (with additional features): {f1_dev_with_features}")
-print(f"Test ROC AUC (with additional features): {roc_auc_test_with_features}")
-print(f"Dev ROC AUC (with additional features): {roc_auc_dev_with_features}")
+print(f"Test Accuracy (with animacy features): {accuracy_test_with_features}")
+print(f"Dev Accuracy (with animacyfeatures): {accuracy_dev_with_features}")
+print(f"Test F1 Score (with animacy features): {f1_test_with_features}")
+print(f"Dev F1 Score (with animacy features): {f1_dev_with_features}")
+print(f"Test ROC AUC (with animacy features): {roc_auc_test_with_features}")
+print(f"Dev ROC AUC (with animacy features): {roc_auc_dev_with_features}")
 
-# Plot ROC curve with additional features
+# Plot ROC curve with animacy features
 plt.figure(figsize=(8, 6))
 plt.plot(fpr_test, tpr_test, color='blue', lw=2, label=f'Test ROC curve (AUC = {roc_auc_test_with_features:.2f})')
 plt.plot(fpr_dev, tpr_dev, color='red', lw=2, label=f'Dev ROC curve (AUC = {roc_auc_dev_with_features:.2f})')
