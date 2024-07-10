@@ -3,6 +3,7 @@ Modeling Semantic Plausibility Project
 Data Analysis
 
 Dataset: Pep3K
+Python version: Python (3.12.3)
 
 To Start:
 

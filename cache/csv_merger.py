@@ -47,4 +47,4 @@ train_add = 'train.csv'
 
 train_augmented_data = pd.read_csv('data_augmented.csv')
 
-print(len(train_augmented_data['label'].values))
+# print(len(train_augmented_data['label'].values))
