@@ -46,26 +46,7 @@ To retrain the BERT embeddings:
 
 If you would like to run our BERT embeddings, go to the large section of commented out Bert embeddings and uncomment it. Look and make sure that you are running on the desired training data, there is one for augmented training data and the original training data.
 
-With separated animacy feature: fnn_2animacy.py
 
-- Test Set: Accuracy: 0.6449
-- Dev Set: Accuracy: 0.6111
-
-This is the FNN with two animacy features added. Two features added, one for object and one for subject. 1 if animate, 0 if inanimate.
-
-With concatenated animacy feature: fnn_animacy.py
-
-- Test Set: Accuracy: 0.7068
-- Dev Set: Accuracy: 0.7026
-
-This is the FNN with one animacy feature added. If an animate subject or object is present in the data instance, feature is 1, if more than 1, 2, if no animacy present 0.
-
-Without animacy feature: fnn.py
-
-- Test Set: Accuracy: 0.6871
-- Dev Set: Accuracy: 0.6993
-
-This is the baseline FFN. It has been trained without the extra anaimcy feature on the original data set.
 
 **BERT**
 Tune the hyperparameters in lines 141-144
@@ -90,6 +71,24 @@ Without animacy feature:
 
 - Dev data F1 Score: 0.5764 ; Accuracy: 0.6013 ; AUC-ROC score: 0.6013
 - Test data F1 Score: 0.5390 ; Accuracy: 0.5375 ; AUC-ROC score: 0.5375
+
+**FFN**
+
+With separated animacy feature: fnn_2animacy.py
+
+- Test Set: Accuracy: 0.6449
+- Dev Set: Accuracy: 0.6111
+
+With concatenated animacy feature: fnn_animacy.py
+
+- Test Set: Accuracy: 0.7068
+- Dev Set: Accuracy: 0.7026
+
+Without animacy feature: fnn.py
+
+- Test Set: Accuracy: 0.6871
+- Dev Set: Accuracy: 0.6993
+
 
 **Random Forest:**
 
