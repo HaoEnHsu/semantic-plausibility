@@ -111,7 +111,8 @@ def evaluate_model(rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev
     return accuracy_test, accuracy_dev, f1_test, f1_dev, roc_auc_test, roc_auc_dev, fpr_test, tpr_test, fpr_dev, tpr_dev
 
 
-# Load labeled data
+# Load labeled data, uncomment line 115 and comment line 118 out if train on original data
+# train_texts, train_features, train_labels = load_data('train_labeled.csv')
 test_texts, test_features, test_labels = load_data('test_labeled.csv')
 dev_texts, dev_features, dev_labels = load_data('dev_labeled.csv')
 train_texts, train_features, train_labels = load_data('data_augmented_a.csv')
