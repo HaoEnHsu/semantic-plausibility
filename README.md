@@ -43,18 +43,18 @@ Without animacy feature:
 
 With separated animacy feature:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.7393 ; Accuracy: 0.7410 ; AUC-ROC score: 0.7700
+- Test data F1 Score: 0.7123 ; Accuracy: 0.7255 ; AUC-ROC score: 0.8082
 
 With combined animacy feature:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.7395 ; Accuracy: 0.7344 ; AUC-ROC score: 0.7709
+- Test data F1 Score: 0.7272 ; Accuracy: 0.7353 ; AUC-ROC score: 0.8085
 
 Without animacy feature:
 
-- Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+- Dev data F1 Score: 0.7355 ; Accuracy: 0.7311 ; AUC-ROC score: 0.7755
+- Test data F1 Score: 0.7248 ; Accuracy: 0.7320 ; AUC-ROC score: 0.8106
 
   
 ## Project Setup
