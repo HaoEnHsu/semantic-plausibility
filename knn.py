@@ -1,15 +1,13 @@
 import pandas as pd
 from transformers import BertTokenizer, BertModel
 import torch
-
 import numpy as np
 import matplotlib.pyplot as plt
-
 from sklearn.neighbors import KNeighborsClassifier
-# from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.metrics import f1_score
 from sklearn.metrics import roc_auc_score, roc_curve, auc
+
 
 def get_sentence_embeddings(text_list, batch_size=32):
     all_embeddings = []
