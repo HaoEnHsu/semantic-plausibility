@@ -243,3 +243,75 @@ plt.ylabel('True Positive Rate')
 plt.title('K-means AUC-ROC without animacy')
 plt.legend()
 plt.show()
+
+# Concatenate BERT embeddings with separated animacy features (without combining them)
+train_features_separated = np.concatenate((train_embeddings, train_features), axis=1)
+test_features_separated = np.concatenate((test_embeddings, test_features), axis=1)
+dev_features_separated = np.concatenate((dev_embeddings, dev_features), axis=1)
+
+# Perform K-means clustering
+def perform_kmeans(features, n_clusters=2):
+    kmeans = KMeans(n_clusters=n_clusters, random_state=42)
+    clusters = kmeans.fit_predict(features)
+    return clusters
+
+train_clusters_separated = perform_kmeans(train_features_separated)
+test_clusters_separated = perform_kmeans(test_features_separated)
+dev_clusters_separated = perform_kmeans(dev_features_separated)
+
+# Convert cluster assignments to predicted labels based on majority voting
+def get_labels_from_clusters(clusters, labels):
+    predicted_labels = np.zeros_like(clusters)
+    for i in range(clusters.max() + 1):
+        cluster_indices = np.where(clusters == i)[0]
+        if len(cluster_indices) > 0:
+            majority_label = np.bincount(labels[cluster_indices]).argmax()
+            predicted_labels[cluster_indices] = majority_label
+    return predicted_labels
+
+train_predicted_labels_separated = get_labels_from_clusters(train_clusters_separated, train_labels)
+test_predicted_labels_separated = get_labels_from_clusters(test_clusters_separated, test_labels)
+dev_predicted_labels_separated = get_labels_from_clusters(dev_clusters_separated, dev_labels)
+
+# Evaluation functions
+def evaluate_f1(true_labels, predicted_labels):
+    return f1_score(true_labels, predicted_labels)
+
+def evaluate_accuracy(true_labels, predicted_labels):
+    return accuracy_score(true_labels, predicted_labels)
+
+def evaluate_auc_roc(true_labels, predicted_labels):
+    return roc_auc_score(true_labels, predicted_labels)
+
+# Evaluate performance
+train_f1_separated = evaluate_f1(train_labels, train_predicted_labels_separated)
+test_f1_separated = evaluate_f1(test_labels, test_predicted_labels_separated)
+dev_f1_separated = evaluate_f1(dev_labels, dev_predicted_labels_separated)
+
+train_accuracy_separated = evaluate_accuracy(train_labels, train_predicted_labels_separated)
+test_accuracy_separated = evaluate_accuracy(test_labels, test_predicted_labels_separated)
+dev_accuracy_separated = evaluate_accuracy(dev_labels, dev_predicted_labels_separated)
+
+train_auc_roc_separated = evaluate_auc_roc(train_labels, train_predicted_labels_separated)
+test_auc_roc_separated = evaluate_auc_roc(test_labels, test_predicted_labels_separated)
+dev_auc_roc_separated = evaluate_auc_roc(dev_labels, dev_predicted_labels_separated)
+
+print(f"Train F1-score (Separated Animacy Features): {train_f1_separated:.4f}, Accuracy: {train_accuracy_separated:.4f}, AUC-ROC: {train_auc_roc_separated:.4f}")
+print(f"Test F1-score (Separated Animacy Features): {test_f1_separated:.4f}, Accuracy: {test_accuracy_separated:.4f}, AUC-ROC: {test_auc_roc_separated:.4f}")
+print(f"Dev F1-score (Separated Animacy Features): {dev_f1_separated:.4f}, Accuracy: {dev_accuracy_separated:.4f}, AUC-ROC: {dev_auc_roc_separated:.4f}")
+
+# Plot ROC curve
+def plot_roc_curve(true_labels, predicted_labels, dataset_name):
+    fpr, tpr, _ = roc_curve(true_labels, predicted_labels)
+    plt.plot(fpr, tpr, label=f'{dataset_name} (AUC = {evaluate_auc_roc(true_labels, predicted_labels):.4f})')
+
+plt.figure(figsize=(10, 6))
+plot_roc_curve(train_labels, train_predicted_labels_separated, 'Train (Separated Animacy Features)')
+plot_roc_curve(test_labels, test_predicted_labels_separated, 'Test (Separated Animacy Features)')
+plot_roc_curve(dev_labels, dev_predicted_labels_separated, 'Dev (Separated Animacy Features)')
+plt.plot([0, 1], [0, 1], 'k--')  # Diagonal line
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('K-means AUC-ROC with Separated Animacy Features')
+plt.legend()
+plt.show()
