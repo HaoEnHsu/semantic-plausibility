@@ -4,7 +4,7 @@
 
 ```python
 python3 -m venv semantic-plausibility
-source env/bin/activate
+source semantic-plausibility/bin/activate
 pip install -r requirements.txt
 ```
 
