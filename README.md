@@ -3,9 +3,15 @@
 > :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 28-31)` and `RandomForest.py (Lines 115-118)` files to the appropriate paths/names on your local machine before running the program.`KNN`: follow the multistring instructions in knn.py to get the results for a desired model**
 
 ```python
-python3 -m venv semantic-plausibility
-source semantic-plausibility/bin/activate
-pip install -r requirements.txt
+
+Setting up the virtual environment:
+- Download all the files from our project repository.
+- Open the folder with downloaded files in the terminal.
+- run the following commands:
+
+   python3 -m msp
+   source msp/bin/activate
+   install -r requirements.txt
 ```
 
 1. Python version:
@@ -30,7 +36,7 @@ Simply run the files. This will give you the evaluation on the already saved mod
 To train:
 
 If you would like to train a new model, go to the bottom of the files and uncomment the training model part, and comment out the section that loads the pretrained model.
-Then simply run the model. To reduce training time, you can lower the number of epochs. It is set to 1250, because we found increased performance at that amount, but the model still does fine with less. 
+Then simply run the model. To reduce training time, you can lower the number of epochs. It is set to 1250, because we found increased performance at that amount, but the model still does fine with less.
 
 To train on the augmented data set:
 
@@ -41,25 +47,25 @@ To retrain the BERT embeddings:
 If you would like to run our BERT embeddings, go to the large section of commented out Bert embeddings and uncomment it. Look and make sure that you are running on the desired training data, there is one for augmented training data and the original training data.
 
 With separated animacy feature: fnn_2animacy.py
+
 - Test Set: Accuracy: 0.6449
 - Dev Set: Accuracy: 0.6111
 
 This is the FNN with two animacy features added. Two features added, one for object and one for subject. 1 if animate, 0 if inanimate.
 
-
 With concatenated animacy feature: fnn_animacy.py
+
 - Test Set: Accuracy: 0.7068
 - Dev Set: Accuracy: 0.7026
 
 This is the FNN with one animacy feature added. If an animate subject or object is present in the data instance, feature is 1, if more than 1, 2, if no animacy present 0.
 
-
 Without animacy feature: fnn.py
+
 - Test Set: Accuracy: 0.6871
 - Dev Set: Accuracy: 0.6993
 
-This is the baseline FFN. It has been trained without the extra anaimcy feature on the original data set. 
-
+This is the baseline FFN. It has been trained without the extra anaimcy feature on the original data set.
 
 **BERT**
 Tune the hyperparameters in lines 141-144
