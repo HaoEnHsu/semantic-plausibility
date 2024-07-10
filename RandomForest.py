@@ -65,7 +65,7 @@ def weight_features(features, weight=20):
     Weights and sums feature values.
 
     Parameters:
-    features (list): List of feature values.
+    features (np.ndarray): Array of feature values.
     weight (int): Weighting factor.
 
     Returns:
@@ -111,55 +111,53 @@ def evaluate_model(rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev
     return accuracy_test, accuracy_dev, f1_test, f1_dev, roc_auc_test, roc_auc_dev, fpr_test, tpr_test, fpr_dev, tpr_dev
 
 
-# Load files, uncomment line 60 and comment line 63 out when using the original dataset
-custom_headers = ['label', 'text', 'anim_s', 'anim_o']
-# train_data = pd.read_csv('train.csv', skiprows=1, header=None, names=custom_headers)
-test_data = pd.read_csv('test.csv', skiprows=1, header=None, names=custom_headers)
-dev_data = pd.read_csv('dev.csv', skiprows=1, header=None, names=custom_headers)
-train_data = pd.read_csv('data_augmented_a.csv', skiprows=1, header=None, names=custom_headers)
+# Load labeled data
+test_texts, test_features, test_labels = load_data('test_labeled.csv')
+dev_texts, dev_features, dev_labels = load_data('dev_labeled.csv')
+train_texts, train_features, train_labels = load_data('data_augmented_a.csv')
 
 # Get strings from data to make BERT embeddings
-train_strings = get_strings(train_data)
-test_strings = get_strings(test_data)
-dev_strings = get_strings(dev_data)
+train_strings = train_texts
+test_strings = test_texts
+dev_strings = dev_texts
 
-# BERT
+# BERT model and tokenizer setup
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertModel.from_pretrained('bert-base-uncased')
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 bert_model.to(device)
 
 # Get sentence embeddings
-train_sentence_embeddings = get_sentence_embeddings(train_strings)
-test_sentence_embeddings = get_sentence_embeddings(test_strings)
-dev_sentence_embeddings = get_sentence_embeddings(dev_strings)
+train_embeddings = get_sentence_embeddings(train_strings)
+test_embeddings = get_sentence_embeddings(test_strings)
+dev_embeddings = get_sentence_embeddings(dev_strings)
 
 # Convert BERT embeddings to numpy arrays
-X_train = train_sentence_embeddings.numpy()
-X_test = test_sentence_embeddings.numpy()
-X_dev = dev_sentence_embeddings.numpy()
+X_train_without = train_embeddings.numpy()
+X_test_without = test_embeddings.numpy()
+X_dev_without = dev_embeddings.numpy()
 
-y_train = train_data['label'].values
-y_test = test_data['label'].values
-y_dev = dev_data['label'].values
+y_train = train_labels
+y_test = test_labels
+y_dev = dev_labels
 
 # Evaluate without additional features
-rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
-accuracy_test, accuracy_dev, f1_test, f1_dev, roc_auc_test, roc_auc_dev, fpr_test, tpr_test, fpr_dev, tpr_dev = evaluate_model(
-    rf_classifier, X_train, y_train, X_test, y_test, X_dev, y_dev
+rf_classifier_without = RandomForestClassifier(n_estimators=100, random_state=42)
+acc_test_without, acc_dev_without, f1_test_without, f1_dev_without, auc_test_without, auc_dev_without, fpr_test_without, tpr_test_without, fpr_dev_without, tpr_dev_without = evaluate_model(
+    rf_classifier_without, X_train_without, y_train, X_test_without, y_test, X_dev_without, y_dev
 )
 
-print(f"Test Accuracy (without animacy features): {accuracy_test}")
-print(f"Dev Accuracy (without animacy features): {accuracy_dev}")
-print(f"Test F1 Score (without animacy features): {f1_test}")
-print(f"Dev F1 Score (without animacy features): {f1_dev}")
-print(f"Test ROC AUC: {roc_auc_test}")
-print(f"Dev ROC AUC: {roc_auc_dev}")
+print(f"Test Accuracy (without animacy features): {acc_test_without}")
+print(f"Dev Accuracy (without animacy features): {acc_dev_without}")
+print(f"Test F1 Score (without animacy features): {f1_test_without}")
+print(f"Dev F1 Score (without animacy features): {f1_dev_without}")
+print(f"Test ROC AUC (without animacy features): {auc_test_without}")
+print(f"Dev ROC AUC (without animacy features): {auc_dev_without}")
 
-# Plot ROC curve
+# Plot ROC curve without animacy features
 plt.figure(figsize=(8, 6))
-plt.plot(fpr_test, tpr_test, color='blue', lw=2, label=f'Test ROC curve (AUC = {roc_auc_test:.2f})')
-plt.plot(fpr_dev, tpr_dev, color='red', lw=2, label=f'Dev ROC curve (AUC = {roc_auc_dev:.2f})')
+plt.plot(fpr_test_without, tpr_test_without, color='blue', lw=2, label=f'Test ROC curve (AUC = {auc_test_without:.2f})')
+plt.plot(fpr_dev_without, tpr_dev_without, color='red', lw=2, label=f'Dev ROC curve (AUC = {auc_dev_without:.2f})')
 plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
@@ -169,43 +167,69 @@ plt.title('RF AUC-ROC without Animacy')
 plt.legend(loc='lower right')
 plt.show()
 
-# Load labeled data for animacy features
-train_texts, train_features, train_labels = load_data('train_labeled.csv')
-test_texts, test_features, test_labels = load_data('test_labeled.csv')
-dev_texts, dev_features, dev_labels = load_data('dev_labeled.csv')
-
-# Weight and sum the animacy features
+# Weight and sum the animacy features for combined animacy
 weighted_train_features = weight_features(train_features, weight=20)
 weighted_test_features = weight_features(test_features, weight=20)
 weighted_dev_features = weight_features(dev_features, weight=20)
 
-# Adding weighted animacy features to BERT embeddings
-train_features_combined = np.concatenate((train_sentence_embeddings, weighted_train_features), axis=1)
-test_features_combined = np.concatenate((test_sentence_embeddings, weighted_test_features), axis=1)
-dev_features_combined = np.concatenate((dev_sentence_embeddings, weighted_dev_features), axis=1)
+# Adding weighted animacy features to BERT embeddings for combined animacy
+X_train_combined = np.concatenate((X_train_without, weighted_train_features), axis=1)
+X_test_combined = np.concatenate((X_test_without, weighted_test_features), axis=1)
+X_dev_combined = np.concatenate((X_dev_without, weighted_dev_features), axis=1)
 
-# Evaluate with animacy features
-rf_classifier_with_features = RandomForestClassifier(n_estimators=100, random_state=42)
-accuracy_test_with_features, accuracy_dev_with_features, f1_test_with_features, f1_dev_with_features, roc_auc_test_with_features, roc_auc_dev_with_features, _, _, _, _ = evaluate_model(
-    rf_classifier_with_features, train_features_combined, y_train, test_features_combined, y_test, dev_features_combined, y_dev
+# Evaluate with combined animacy features
+rf_classifier_combined = RandomForestClassifier(n_estimators=100, random_state=42)
+acc_test_combined, acc_dev_combined, f1_test_combined, f1_dev_combined, auc_test_combined, auc_dev_combined, _, _, _, _ = evaluate_model(
+    rf_classifier_combined, X_train_combined, y_train, X_test_combined, y_test, X_dev_combined, y_dev
 )
 
-print(f"Test Accuracy (with animacy features): {accuracy_test_with_features}")
-print(f"Dev Accuracy (with animacyfeatures): {accuracy_dev_with_features}")
-print(f"Test F1 Score (with animacy features): {f1_test_with_features}")
-print(f"Dev F1 Score (with animacy features): {f1_dev_with_features}")
-print(f"Test ROC AUC (with animacy features): {roc_auc_test_with_features}")
-print(f"Dev ROC AUC (with animacy features): {roc_auc_dev_with_features}")
+print(f"Test Accuracy (with combined animacy features): {acc_test_combined}")
+print(f"Dev Accuracy (with combined animacy features): {acc_dev_combined}")
+print(f"Test F1 Score (with combined animacy features): {f1_test_combined}")
+print(f"Dev F1 Score (with combined animacy features): {f1_dev_combined}")
+print(f"Test ROC AUC (with combined animacy features): {auc_test_combined}")
+print(f"Dev ROC AUC (with combined animacy features): {auc_dev_combined}")
 
-# Plot ROC curve with animacy features
+# Plot ROC curve with combined animacy features
 plt.figure(figsize=(8, 6))
-plt.plot(fpr_test, tpr_test, color='blue', lw=2, label=f'Test ROC curve (AUC = {roc_auc_test_with_features:.2f})')
-plt.plot(fpr_dev, tpr_dev, color='red', lw=2, label=f'Dev ROC curve (AUC = {roc_auc_dev_with_features:.2f})')
+plt.plot(fpr_test_without, tpr_test_without, color='blue', lw=2, label=f'Test ROC curve (AUC = {auc_test_combined:.2f})')
+plt.plot(fpr_dev_without, tpr_dev_without, color='red', lw=2, label=f'Dev ROC curve (AUC = {auc_dev_combined:.2f})')
 plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
 plt.xlim([0.0, 1.0])
 plt.ylim([0.0, 1.05])
 plt.xlabel('False Positive Rate')
 plt.ylabel('True Positive Rate')
-plt.title('RF AUC-ROC with Animacy')
+plt.title('RF AUC-ROC with Combined Animacy')
+plt.legend(loc='lower right')
+plt.show()
+
+# Adding separate animacy features to BERT embeddings
+X_train_separate = np.concatenate((X_train_without, train_features), axis=1)
+X_test_separate = np.concatenate((X_test_without, test_features), axis=1)
+X_dev_separate = np.concatenate((X_dev_without, dev_features), axis=1)
+
+# Evaluate with separate animacy features
+rf_classifier_separate = RandomForestClassifier(n_estimators=100, random_state=42)
+acc_test_separate, acc_dev_separate, f1_test_separate, f1_dev_separate, auc_test_separate, auc_dev_separate, fpr_test_separate, tpr_test_separate, fpr_dev_separate, tpr_dev_separate = evaluate_model(
+    rf_classifier_separate, X_train_separate, y_train, X_test_separate, y_test, X_dev_separate, y_dev
+)
+
+print(f"Test Accuracy (with separate animacy features): {acc_test_separate}")
+print(f"Dev Accuracy (with separate animacy features): {acc_dev_separate}")
+print(f"Test F1 Score (with separate animacy features): {f1_test_separate}")
+print(f"Dev F1 Score (with separate animacy features): {f1_dev_separate}")
+print(f"Test ROC AUC (with separate animacy features): {auc_test_separate}")
+print(f"Dev ROC AUC (with separate animacy features): {auc_dev_separate}")
+
+# Plot ROC curve with separate animacy features
+plt.figure(figsize=(8, 6))
+plt.plot(fpr_test_separate, tpr_test_separate, color='blue', lw=2, label=f'Test ROC curve (AUC = {auc_test_separate:.2f})')
+plt.plot(fpr_dev_separate, tpr_dev_separate, color='red', lw=2, label=f'Dev ROC curve (AUC = {auc_dev_separate:.2f})')
+plt.plot([0, 1], [0, 1], color='gray', linestyle='--')
+plt.xlim([0.0, 1.0])
+plt.ylim([0.0, 1.05])
+plt.xlabel('False Positive Rate')
+plt.ylabel('True Positive Rate')
+plt.title('RF AUC-ROC with Separate Animacy')
 plt.legend(loc='lower right')
 plt.show()
