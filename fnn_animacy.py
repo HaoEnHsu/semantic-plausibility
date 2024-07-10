@@ -8,14 +8,25 @@ from sklearn.metrics import f1_score, accuracy_score, roc_auc_score, roc_curve
 import matplotlib.pyplot as plt
 import numpy as np
 
+
 class FNN(nn.Module):
+    """
+    Feedforward Neural Network class.
+    """
+
     def __init__(self):
+        """
+        Initializes neural network layers.
+        """
         super(FNN, self).__init__()
-        self.fc1 = nn.Linear(769, 120)  # 768 is BERT's embedding size
+        self.fc1 = nn.Linear(769, 120)  # 768 is BERT's embedding size + 1 for the animacy feature
         self.relu = nn.ReLU()
         self.fc2 = nn.Linear(120, 1)
 
     def forward(self, x):
+        """
+        Defines the forward pass of the network.
+        """
         out = self.fc1(x)
         out = self.relu(out)
         out = self.fc2(out)
@@ -23,6 +34,19 @@ class FNN(nn.Module):
         return out
 
     def train_model(self, train_loader, device, num_epochs, dev_loader):
+        """
+        Trains the neural network.
+
+        Args:
+            train_loader (DataLoader): DataLoader for the training data.
+            device (torch.device): Device to use for training.
+            num_epochs (int): Number of epochs for training.
+            dev_loader (DataLoader): DataLoader for the validation data.
+
+        Returns:
+            loss_history (list): List of training losses.
+            val_loss_history (list): List of validation losses.
+        """
         self.to(device)
         criterion = nn.BCELoss()  # BCELoss since sigmoid is included in forward
         optimizer = optim.Adam(self.parameters(), lr=0.001)
@@ -42,16 +66,25 @@ class FNN(nn.Module):
                 optimizer.step()
                 running_loss += loss.item()
             epoch_loss = running_loss / len(train_loader)
+
             loss_history.append(epoch_loss)
-            print(f"Epoch {epoch + 1}/{num_epochs}, Loss: {epoch_loss}")
 
             val_loss, val_f1, val_accuracy, val_auc, _, _ = self.eval_model(dev_loader, device, dataset_name='Validation')
             val_loss_history.append(val_loss)
-            print(f"Epoch {epoch + 1}/{num_epochs}, Validation Loss: {val_loss}, Validation F1 Score: {val_f1}, Validation Accuracy: {val_accuracy}, Validation AUC: {val_auc}")
-
+            print(f"Epoch {epoch + 1}/{num_epochs}")
         return loss_history, val_loss_history
 
     def predict(self, X_test_tensor, device):
+        """
+        Makes predictions on the test data.
+
+        Args:
+            X_test_tensor (torch.Tensor): Test data tensor.
+            device (torch.device): Device to use for prediction.
+
+        Returns:
+            predictions (torch.Tensor): Predicted labels.
+        """
         self.eval()
         with torch.no_grad():
             outputs = self(X_test_tensor.to(device))
@@ -59,6 +92,22 @@ class FNN(nn.Module):
         return predictions.cpu()
 
     def eval_model(self, eval_loader, device, dataset_name):
+        """
+        Evaluates the model on the given dataset.
+
+        Args:
+            eval_loader (DataLoader): DataLoader for the evaluation data.
+            device (torch.device): Device to use for evaluation.
+            dataset_name (str): Name of the dataset.
+
+        Returns:
+            loss (float): Evaluation loss.
+            f1 (float): F1 score.
+            accuracy (float): Accuracy.
+            auc (float): Area under the ROC curve.
+            fpr (ndarray): False positive rates.
+            tpr (ndarray): True positive rates.
+        """
         self.eval()
         criterion = nn.BCELoss()
         loss = 0
@@ -87,7 +136,21 @@ class FNN(nn.Module):
 
         return loss, f1, accuracy, auc, fpr, tpr
 
+
 def get_sentence_embeddings(text_list, tokenizer, bert_model, device, batch_size=64):
+    """
+    Gets BERT sentence embeddings for a list of texts.
+
+    Args:
+        text_list (list): List of texts.
+        tokenizer (BertTokenizer): BERT tokenizer.
+        bert_model (BertModel): BERT model.
+        device (torch.device): Device to use for computation.
+        batch_size (int): Batch size for processing.
+
+    Returns:
+        sentence_embeddings (torch.Tensor): BERT sentence embeddings.
+    """
     bert_model.eval()
     all_embeddings = []
     for i in range(0, len(text_list), batch_size):
@@ -100,45 +163,69 @@ def get_sentence_embeddings(text_list, tokenizer, bert_model, device, batch_size
     sentence_embeddings = torch.cat(all_embeddings, dim=0)
     return sentence_embeddings
 
+
 def get_strings(dataframe):
-    return dataframe['text'].tolist()
+    """
+    Extracts text strings from a DataFrame, for BERT embeddings.
+
+    Args:
+        dataframe (pd.DataFrame): Input DataFrame.
+
+    Returns:
+        list: List of text strings.
+    """
+    return dataframe.iloc[:, 1].tolist()  # text is in the second column
+
 
 def load_data(file_path):
+    """
+    Loads data from a CSV file.
+
+    Args:
+        file_path (str): Path to the CSV file.
+
+    Returns:
+        texts (list): List of texts.
+        features (ndarray): Combined animacy features from the third and fourth columns.
+        labels (ndarray): Labels.
+    """
     data = pd.read_csv(file_path, header=None)
-    texts = data[1].tolist()
-    features = data[[2]].values
-    labels = data[0].values
+    texts = data.iloc[:, 1].tolist()  # Assuming the text is in the second column
+    features = (data.iloc[:, 2] + data.iloc[:, 3]).values.reshape(-1, 1)  # Combining the third and fourth columns
+    labels = data.iloc[:, 0].values  # Assuming labels are in the first column
     return texts, features, labels
+
+#to run on augmented data, please change the code each places that you find a 1.
 
 # Device setup
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# Load files
-train_data = pd.read_csv('train.csv', header=None)
-test_data = pd.read_csv('test.csv', header=None)
-dev_data = pd.read_csv('dev.csv', header=None)
+# Load files, 1. switch to other train data
+train_data = pd.read_csv('train_a_labeled.csv', header=None)
+#train_data = pd.read_csv('data_augmented_a.csv', header=None)
+test_data = pd.read_csv('test_a_labeled.csv', header=None)
+dev_data = pd.read_csv('dev_a_labeled.csv', header=None)
 
-train_texts, train_features, y_train = load_data('train_labeled.csv')
-test_texts, test_features, y_test = load_data('test_labeled.csv')
-dev_texts, dev_features, y_dev = load_data('dev_labeled.csv')
+# 1. switch to other train
+train_texts, train_features, y_train = load_data('train_a_labeled.csv')
+#train_texts, train_features, y_train = load_data('data_augmented_a.csv')
+test_texts, test_features, y_test = load_data('test_a_labeled.csv')
+dev_texts, dev_features, y_dev = load_data('dev_a_labeled.csv')
 
-animacy_weight = 20  # Adjust this weight based on your requirement
-train_features[:, -1] *= animacy_weight
-test_features[:, -1] *= animacy_weight
-dev_features[:, -1] *= animacy_weight
+animacy_weight = 10  # Adjust this weight based on your requirement
 
-'''
-# Ensure the labels and texts are paired correctly
-assert len(y_train) == len(train_data['text'])
-assert len(y_test) == len(test_data['text'])
-assert len(y_dev) == len(dev_data['text'])
+# Multiply the animacy feature by animacy_weight
+train_features *= animacy_weight
+test_features *= animacy_weight
+dev_features *= animacy_weight
 
 # Get strings from data to make BERT embeddings
 train_strings = get_strings(train_data)
 test_strings = get_strings(test_data)
 dev_strings = get_strings(dev_data)
 
-# BERT
+'''
+# BERT, uncomment to get embeddings again, they are already saved
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
 bert_model = BertModel.from_pretrained('bert-base-uncased').to(device)
 
@@ -147,17 +234,20 @@ train_sentence_embeddings = get_sentence_embeddings(train_strings, tokenizer, be
 dev_sentence_embeddings = get_sentence_embeddings(dev_strings, tokenizer, bert_model, device)
 test_sentence_embeddings = get_sentence_embeddings(test_strings, tokenizer, bert_model, device)
 
-# Save and load embeddings (if needed)
+# Save and load embeddings 
+# 1. switch training data
 torch.save(train_sentence_embeddings, "train_sentence_embeddings.pt")
+#torch.save(train_sentence_embeddings, "train_augmented_sentence_embeddings.pt")
 torch.save(dev_sentence_embeddings, "dev_sentence_embeddings.pt")
 torch.save(test_sentence_embeddings, "test_sentence_embeddings.pt")
-
 '''
+# 1. switch to other train data, this is the last thing to change!
 train_sentence_embeddings = torch.load("train_sentence_embeddings.pt")
+#train_sentence_embeddings = torch.load('train_augmented_sentence_embeddings.pt')
 dev_sentence_embeddings = torch.load("dev_sentence_embeddings.pt")
 test_sentence_embeddings = torch.load("test_sentence_embeddings.pt")
 
-# Concatenate 'an' vectors with corresponding BERT embeddings
+# Concatenate the animacy feature with corresponding BERT embeddings
 train_combined_embeddings = np.concatenate((train_sentence_embeddings.numpy(), train_features), axis=1)
 test_combined_embeddings = np.concatenate((test_sentence_embeddings.numpy(), test_features), axis=1)
 dev_combined_embeddings = np.concatenate((dev_sentence_embeddings.numpy(), dev_features), axis=1)
@@ -185,10 +275,11 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 # Initialize and train the model
 model = FNN()
 '''
+# Lines 277 to 289 need to be not commented out to train the model, and lines 291 and 292 must be commented out
 loss_history, val_loss_history = model.train_model(train_loader, device, num_epochs=1250, dev_loader=dev_loader)
-torch.save(model.state_dict(), 'fnn_model4.pth')
+torch.save(model.state_dict(), 'fnn_model_animacy_aug.pth')
 
-# Plot the loss curve
+#Plot the loss curve
 plt.plot(range(1, len(loss_history) + 1), loss_history, label='Training Loss')
 plt.plot(range(1, len(val_loss_history) + 1), val_loss_history, label='Validation Loss')
 plt.xlabel('Epochs')
@@ -197,7 +288,7 @@ plt.title('Training and Validation Loss Curve')
 plt.legend()
 plt.show()
 '''
-# Load model
+# Load model, uncomment these two lines to run already trained model
 model.load_state_dict(torch.load('fnn_w_animacy_model.pth'))
 model.to(device)
 
