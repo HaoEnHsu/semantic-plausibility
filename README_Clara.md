@@ -22,29 +22,37 @@ To retrain the BERT embeddings:
 If you would like to run our BERT embeddings, go to the large section of commented out Bert embeddings and uncomment it. Look and make sure that you are running on the desired training data, there is one for augmented training data and the original training data.
 
 
-**Versions: **
+**Versions:**
 
 ffn.py
 
 Results:
 
 Test Set: Accuracy: 0.6871
+
 Dev Set: Accuracy: 0.6993
+
 This is the baseline FFN. It has been trained without the extra anaimcy feature on the original data set. It can also be run on the augmented data, but performance goes down.
 
 fnn_animacy.py
 
 Results:
+
 Test Set: Accuracy: 0.7068
+
 Dev Set: Accuracy: 0.7026
+
 This is the FNN with one animacy feature added. If an animate subject or object is present in the data instance, feature is 1, if more than 1, 2, if no animacy present 0.
 This can also be trained on augmented data set but it decreases performance.
 
 fnn_2animacy.py
 
 Results:
+
 Test Set: Accuracy: 0.6449
+
 Dev Set: Accuracy: 0.6111
+
 This is the FNN with two animacy features added. Two features added, one for object and one for subject. 1 if animate, 0 if inanimate.
 This can also be trained on augmented data set but it decreases performance.
 
