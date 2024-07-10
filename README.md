@@ -4,35 +4,53 @@ Shawn:
 ## Evaluation Results on Augmented Data
 
 **Evaluation results for the Test and dev data with separated animacy feature:**
+
 K-means:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 Random Forest: 
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 BERT:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
 
 **Evaluation results for the Test and dev data with concatenated animacy feature:**
+
 K-means:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 Random Forest: 
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 BERT:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
 
 **Evaluation results for the Test and dev data without animacy feature:**
+
 K-means:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 Random Forest: 
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
+  
 BERT:
+
 - Dev data F1 Score: ; Accuracy: ; AUC-ROC score:
 - Test data F1 Score: ; Accuracy: ; AUC-ROC score:
 
