@@ -9,8 +9,13 @@ Setting up the virtual environment:
 - Go to the folder with downloaded files, it will be called ‘semantic-plausibility’ ('cd semantic-plausibility' for Mac, and 'cd .\semantic-plausibility' for Windows)
 - ⁠Run the following commands:
 
-  python3 -m asp
-  source msp/bin/activate (for Mac) or .\msp\Scripts\activate (for Windows)
+  python3 -m venv msp
+  
+  ./msp/Scripts/activate (for Mac)
+
+  or .\msp\Scripts\activate (for Windows)
+  and
+  
   pip install -r requirements.txt
 
 - ⁠to run knn.py, for instance, stay in main folder's with all files directory and run the following command: python3 knn.py
