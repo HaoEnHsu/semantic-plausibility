@@ -3,14 +3,14 @@ import torch
 from transformers import BertTokenizer, BertModel
 from sklearn.metrics import f1_score, roc_auc_score, roc_curve, auc, accuracy_score
 import matplotlib.pyplot as plt
-import seaborn as sns
 import torch.nn as nn
 import torch.optim as optim
 
-# Load data
-train_df = pd.read_csv('train_labeled.csv')
+# Load data, uncomment line 10 and comment line 13 out if train on original data
+# train_df = pd.read_csv('train_labeled.csv')
 test_df = pd.read_csv('test_labeled.csv')
 dev_df = pd.read_csv('dev_labeled.csv')
+train_df = pd.read_csv('data_augmented_a.csv')
 
 # Initialize tokenizer and model
 tokenizer = BertTokenizer.from_pretrained('bert-base-uncased')
@@ -33,9 +33,9 @@ def get_bert_embeddings(texts):
     return outputs.last_hidden_state[:, 0, :].numpy()
 
 
-def preprocess_data(df):
+def preprocess_data_with_separate_animacy(df):
     """
-    Function to preprocess data by combining BERT embeddings with additional features.
+    Function to preprocess data by combining BERT embeddings with separate animacy features.
 
     Parameters:
     df (pandas.DataFrame): DataFrame containing the dataset.
@@ -57,9 +57,58 @@ def preprocess_data(df):
     return concatenated_features, labels
 
 
-train_features, train_labels = preprocess_data(train_df)
-test_features, test_labels = preprocess_data(test_df)
-dev_features, dev_labels = preprocess_data(dev_df)
+def preprocess_data_with_combined_animacy(df):
+    """
+    Function to preprocess data by combining BERT embeddings with combined animacy feature.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame containing the dataset.
+
+    Returns:
+    torch.Tensor: Concatenated features tensor.
+    numpy.ndarray: Labels array.
+    """
+    texts = df.iloc[:, 1].tolist()
+    animacy_label = (df.iloc[:, 2].values + df.iloc[:, 3].values).reshape(-1, 1)
+
+    bert_embeddings = get_bert_embeddings(texts)
+    concatenated_features = torch.tensor(bert_embeddings)
+    concatenated_features = torch.cat((concatenated_features, torch.tensor(animacy_label)), dim=1)
+
+    labels = df.iloc[:, 0].values
+
+    return concatenated_features, labels
+
+
+def preprocess_data_without_animacy(df):
+    """
+    Function to preprocess data using BERT embeddings only.
+
+    Parameters:
+    df (pandas.DataFrame): DataFrame containing the dataset.
+
+    Returns:
+    torch.Tensor: Embeddings tensor.
+    numpy.ndarray: Labels array.
+    """
+    texts = df.iloc[:, 1].tolist()
+    bert_embeddings = get_bert_embeddings(texts)
+    embeddings_tensor = torch.tensor(bert_embeddings)
+    labels = df.iloc[:, 0].values
+    return embeddings_tensor, labels
+
+
+train_features_separate, train_labels_separate = preprocess_data_with_separate_animacy(train_df)
+test_features_separate, test_labels_separate = preprocess_data_with_separate_animacy(test_df)
+dev_features_separate, dev_labels_separate = preprocess_data_with_separate_animacy(dev_df)
+
+train_features_combined, train_labels_combined = preprocess_data_with_combined_animacy(train_df)
+test_features_combined, test_labels_combined = preprocess_data_with_combined_animacy(test_df)
+dev_features_combined, dev_labels_combined = preprocess_data_with_combined_animacy(dev_df)
+
+train_features_without, train_labels_without = preprocess_data_without_animacy(train_df)
+test_features_without, test_labels_without = preprocess_data_without_animacy(test_df)
+dev_features_without, dev_labels_without = preprocess_data_without_animacy(dev_df)
 
 
 class BERTBinaryClassifier(nn.Module):
@@ -89,32 +138,58 @@ class BERTBinaryClassifier(nn.Module):
 
 # Define hyperparameters
 hyperparameters = {
-    'input_dim': train_features.shape[1],
+    'input_dim': train_features_separate.shape[1],
     'learning_rate': 5e-5,
-    'num_epochs': 1250,
+    'num_epochs': 1000,
     'batch_size': 8,
 }
 
-# Initialize model, criterion, and optimizer
-classifier_model = BERTBinaryClassifier(hyperparameters['input_dim'])
+# Initialize models, criterion, and optimizers
+model_separate = BERTBinaryClassifier(hyperparameters['input_dim'])
+model_combined = BERTBinaryClassifier(train_features_combined.shape[1])
+model_without = BERTBinaryClassifier(train_features_without.shape[1])
+
 criterion = nn.BCELoss()
-optimizer = optim.Adam(classifier_model.parameters(), lr=hyperparameters['learning_rate'])
+
+optimizer_separate = optim.Adam(model_separate.parameters(), lr=hyperparameters['learning_rate'])
+optimizer_combined = optim.Adam(model_combined.parameters(), lr=hyperparameters['learning_rate'])
+optimizer_without = optim.Adam(model_without.parameters(), lr=hyperparameters['learning_rate'])
 
 # Prepare data loaders
-train_data = torch.utils.data.TensorDataset(train_features, torch.tensor(train_labels, dtype=torch.float32))
-train_loader = torch.utils.data.DataLoader(train_data, batch_size=hyperparameters['batch_size'], shuffle=True)
+train_data_separate = torch.utils.data.TensorDataset(train_features_separate, torch.tensor(train_labels_separate, dtype=torch.float32))
+train_loader_separate = torch.utils.data.DataLoader(train_data_separate, batch_size=hyperparameters['batch_size'], shuffle=True)
 
-# Training loop
-for epoch in range(hyperparameters['num_epochs']):
-    classifier_model.train()
-    epoch_loss = 0
-    for batch_features, batch_labels in train_loader:
-        optimizer.zero_grad()
-        outputs = classifier_model(batch_features).squeeze()
-        loss = criterion(outputs, batch_labels)
-        loss.backward()
-        optimizer.step()
-        epoch_loss += loss.item()
+train_data_combined = torch.utils.data.TensorDataset(train_features_combined, torch.tensor(train_labels_combined, dtype=torch.float32))
+train_loader_combined = torch.utils.data.DataLoader(train_data_combined, batch_size=hyperparameters['batch_size'], shuffle=True)
+
+train_data_without = torch.utils.data.TensorDataset(train_features_without, torch.tensor(train_labels_without, dtype=torch.float32))
+train_loader_without = torch.utils.data.DataLoader(train_data_without, batch_size=hyperparameters['batch_size'], shuffle=True)
+
+
+def train_model(model, optimizer, train_loader):
+    """
+    Function to train the model.
+
+    Parameters:
+    model (nn.Module): Model to be trained.
+    optimizer (torch.optim.Optimizer): Optimizer for training.
+    train_loader (torch.utils.data.DataLoader): DataLoader for training data.
+    """
+    model.train()
+    for epoch in range(hyperparameters['num_epochs']):
+        epoch_loss = 0
+        for batch_features, batch_labels in train_loader:
+            optimizer.zero_grad()
+            outputs = model(batch_features).squeeze()
+            loss = criterion(outputs, batch_labels)
+            loss.backward()
+            optimizer.step()
+            epoch_loss += loss.item()
+
+
+train_model(model_separate, optimizer_separate, train_loader_separate)
+train_model(model_combined, optimizer_combined, train_loader_combined)
+train_model(model_without, optimizer_without, train_loader_without)
 
 
 def evaluate_model(model, features, labels):
@@ -139,7 +214,7 @@ def evaluate_model(model, features, labels):
     return f1, roc_auc, accuracy
 
 
-def plot_combined_roc_curves(model_dev, model_test, features_dev, labels_dev, features_test, labels_test, title):
+def plot_roc_curves(model_dev, model_test, features_dev, labels_dev, features_test, labels_test, title):
     """
     Function to plot combined ROC curves for development and test sets.
 
@@ -179,66 +254,36 @@ def plot_combined_roc_curves(model_dev, model_test, features_dev, labels_dev, fe
 
 
 # Evaluate models
-f1_dev, roc_auc_dev, accuracy_dev = evaluate_model(classifier_model, dev_features, dev_labels)
-f1_test, roc_auc_test, accuracy_test = evaluate_model(classifier_model, test_features, test_labels)
+f1_dev_separate, roc_auc_dev_separate, accuracy_dev_separate = evaluate_model(model_separate, dev_features_separate, dev_labels_separate)
+f1_test_separate, roc_auc_test_separate, accuracy_test_separate = evaluate_model(model_separate, test_features_separate, test_labels_separate)
 
-print(f'Dev Set (With Animacy) - F1 Score: {f1_dev}, ROC-AUC: {roc_auc_dev}, Accuracy: {accuracy_dev}')
-print(f'Test Set (With Animacy) - F1 Score: {f1_test}, ROC-AUC: {roc_auc_test}, Accuracy: {accuracy_test}')
+print(f'Dev Set (with separate animacy) - F1 Score: {f1_dev_separate}, ROC-AUC: {roc_auc_dev_separate}, Accuracy: {accuracy_dev_separate}')
+print(f'Test Set (with separate animacy) - F1 Score: {f1_test_separate}, ROC-AUC: {roc_auc_test_separate}, Accuracy: {accuracy_test_separate}')
 
-# Plot combined ROC curve for with animacy features
-plot_combined_roc_curves(classifier_model, classifier_model, dev_features, dev_labels, test_features, test_labels, 'BERT AUC-ROC with Animacy')
-
-
-def preprocess_data_embeddings_only(df):
-    """
-    Function to preprocess data using BERT embeddings only.
-
-    Parameters:
-    df (pandas.DataFrame): DataFrame containing the dataset.
-
-    Returns:
-    torch.Tensor: Embeddings tensor.
-    numpy.ndarray: Labels array.
-    """
-    texts = df.iloc[:, 1].tolist()
-    bert_embeddings = get_bert_embeddings(texts)
-    embeddings_tensor = torch.tensor(bert_embeddings)
-    labels = df.iloc[:, 0].values
-    return embeddings_tensor, labels
-
-
-# Preprocess data for embeddings only
-train_features_embeddings, train_labels_embeddings = preprocess_data_embeddings_only(train_df)
-test_features_embeddings, test_labels_embeddings = preprocess_data_embeddings_only(test_df)
-dev_features_embeddings, dev_labels_embeddings = preprocess_data_embeddings_only(dev_df)
-
-# Initialize model and optimizer for embeddings only
-input_dim_embeddings = train_features_embeddings.shape[1]
-classifier_model_embeddings = BERTBinaryClassifier(input_dim_embeddings)
-optimizer_embeddings = optim.Adam(classifier_model_embeddings.parameters(), lr=hyperparameters['learning_rate'])
-
-# Prepare data loader for embeddings only
-train_data_embeddings = torch.utils.data.TensorDataset(train_features_embeddings, torch.tensor(train_labels_embeddings, dtype=torch.float32))
-train_loader_embeddings = torch.utils.data.DataLoader(train_data_embeddings, batch_size=hyperparameters['batch_size'], shuffle=True)
-
-# Training loop for embeddings only
-for epoch in range(hyperparameters['num_epochs']):
-    classifier_model_embeddings.train()
-    epoch_loss = 0
-    for batch_features, batch_labels in train_loader_embeddings:
-        optimizer_embeddings.zero_grad()
-        outputs = classifier_model_embeddings(batch_features).squeeze()
-        loss = criterion(outputs, batch_labels)
-        loss.backward()
-        optimizer_embeddings.step()
-        epoch_loss += loss.item()
+# Plot ROC curve for separate animacy features
+plot_roc_curves(model_separate, model_separate, dev_features_separate, dev_labels_separate, test_features_separate, test_labels_separate, 'BERT AUC-ROC with Separate Animacy')
 
 # Evaluate models for embeddings only
-f1_dev_embeddings, roc_auc_dev_embeddings, accuracy_dev_embeddings = evaluate_model(classifier_model_embeddings, dev_features_embeddings, dev_labels_embeddings)
-f1_test_embeddings, roc_auc_test_embeddings, accuracy_test_embeddings = evaluate_model(classifier_model_embeddings, test_features_embeddings, test_labels_embeddings)
+f1_dev_without, roc_auc_dev_without, accuracy_dev_without = evaluate_model(model_without, dev_features_without, dev_labels_without)
+f1_test_without, roc_auc_test_without, accuracy_test_without = evaluate_model(model_without, test_features_without, test_labels_without)
 
-print(f'Dev Set (without animacy) - F1 Score: {f1_dev_embeddings}, ROC-AUC: {roc_auc_dev_embeddings}, Accuracy: {accuracy_dev_embeddings}')
-print(f'Test Set (without animacy) - F1 Score: {f1_test_embeddings}, ROC-AUC: {roc_auc_test_embeddings}, Accuracy: {accuracy_test_embeddings}')
+print(f'Dev Set (without animacy) - F1 Score: {f1_dev_without}, ROC-AUC: {roc_auc_dev_without}, Accuracy: {accuracy_dev_without}')
+print(f'Test Set (without animacy) - F1 Score: {f1_test_without}, ROC-AUC: {roc_auc_test_without}, Accuracy: {accuracy_test_without}')
 
-# Plot combined ROC curve for embeddings only
-plot_combined_roc_curves(classifier_model_embeddings, classifier_model_embeddings, dev_features_embeddings, dev_labels_embeddings, test_features_embeddings, test_labels_embeddings, 'BERT AUC-ROC without Animacy')
+# Plot ROC curve for embeddings only
+plot_roc_curves(model_without, model_without, dev_features_without, dev_labels_without, test_features_without, test_labels_without, 'BERT AUC-ROC without Animacy')
+
+# Evaluate models with combined animacy label
+f1_dev_combined, roc_auc_dev_combined, accuracy_dev_combined = evaluate_model(model_combined, dev_features_combined, dev_labels_combined)
+f1_test_combined, roc_auc_test_combined, accuracy_test_combined = evaluate_model(model_combined, test_features_combined, test_labels_combined)
+
+print(f'Dev Set (with combined animacy) - F1 Score: {f1_dev_combined}, ROC-AUC: {roc_auc_dev_combined}, Accuracy: {accuracy_dev_combined}')
+print(f'Test Set (with combined animacy) - F1 Score: {f1_test_combined}, ROC-AUC: {roc_auc_test_combined}, Accuracy: {accuracy_test_combined}')
+
+# Plot ROC curve for combined animacy features
+plot_roc_curves(model_combined, model_combined, dev_features_combined, dev_labels_combined, test_features_combined, test_labels_combined, 'BERT AUC-ROC with Combined Animacy')
+
+# Save the models
+torch.save(model_separate.state_dict(), 'model_separate.pth')
+torch.save(model_without.state_dict(), 'model_without.pth')
+torch.save(model_combined.state_dict(), 'model_combined.pth')
