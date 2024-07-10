@@ -53,6 +53,10 @@ Tune the hyperparameters in lines 141-144
 
 3. To get the models work, simply run the files.
 
+Cache: All files inbetween that we used to convert from tsv to csv
+
+Data Analysis: Our analaysis of the data, runs using same virual environment
+
 ## Evaluation Results on Augmented (Original) Data
 
 **K-means (performances on augmented data and original data are identical)**
