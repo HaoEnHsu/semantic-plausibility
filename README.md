@@ -57,7 +57,7 @@ BERT:
   
 ## Project Setup
 
-> :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 26-29)` and `RandomForest.py (Lines 60-63)` files to the appropriate paths/names on your local machine before running the program.**
+> :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 26-29)` and `RandomForest.py (Lines 116-119)` files to the appropriate paths/names on your local machine before running the program.**
 
 ```python
 python3 -m venv team_lab
