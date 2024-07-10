@@ -40,6 +40,7 @@ Without animacy feature:
   
 
 **BERT:**
+**Tune the hyperparameters in lines 141-144
 
 With separated animacy feature:
 
