@@ -2,26 +2,42 @@
 
 > :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 28-31)` and `RandomForest.py (Lines 115-118)` files to the appropriate paths/names on your local machine before running the program.`KNN`: follow the multistring instructions in knn.py to get the results for a desired model**
 
-```python
-
 Setting up the virtual environment:
-- Download all the files from our project repository.
-- Open the folder with downloaded files in the terminal.
-- run the following commands:
 
-   python3 -m msp
-   source msp/bin/activate
-   install -r requirements.txt
-```
+- ⁠Go to the local directory of your choice in Terminal
+- Clone our repository by running 'git clone https://github.com/HaoEnHsu/semantic-plausibility'
+- Go to the folder with downloaded files, it will be called ‘semantic-plausibility’ ('cd semantic-plausibility' for Mac, and 'cd .\semantic-plausibility' for Windows)
+- ⁠Run the following commands:
 
-1. Python version:
-   - Python (3.12.3)
-2. Overview:
+  python3 -m asp
+  source msp/bin/activate (for Mac) or .\msp\Scripts\activate (for Windows)
+  pip install -r requirements.txt
 
-Five models in total have been implemented: K-means, Random Forest, KNN, FNN, BERT.
+- ⁠to run knn.py, for instance, stay in main folder's with all files directory and run the following command: python3 knn.py
+
+## Python Version
+
+- Python (3.12.3)
+
+## Overview:
+
+Five models in total have been implemented: K-means, Random Forest, KNN, FNN, BERT. Apart from Python modules with respective names of the models, the project folder contains:
+
+- requirements.txt used for installing Python libraries
+- Folder cache: All files in between that we used to augment our train set, and Python modules used to convert tsv files to csv format, and the merger of columns in csv.
+- Data Analysis: Our analaysis of the data, runs using same virual environment.
+- the original pep3k csv files, data_augmented.csv (train set augmented by data from 20Q dataset), and the versions of the original csv files with animacy features added.
+- saved BERT embeddings
+- saved FNN models
 
 **K-means**
+
+Run kmeans.py.
+
 **Random Forest**
+
+Run RandomForest.py
+
 **KNN**
 Hyperparameters: k=9, distance='manhattan'. Other k numbers and distances have been tested, but this pair generally gives the best results.
 
@@ -46,16 +62,9 @@ To retrain the BERT embeddings:
 
 If you would like to run our BERT embeddings, go to the large section of commented out Bert embeddings and uncomment it. Look and make sure that you are running on the desired training data, there is one for augmented training data and the original training data.
 
-
-
 **BERT**
-Tune the hyperparameters in lines 141-144
 
-3. To get the models work, simply run the files.
-
-Cache: All files inbetween that we used to convert from tsv to csv
-
-Data Analysis: Our analaysis of the data, runs using same virual environment
+Run BERT.py. Tune the hyperparameters in lines 141-144.
 
 ## Evaluation Results on Augmented (Original) Data
 
@@ -92,7 +101,6 @@ Without animacy feature: fnn.py
 
 - Test Set: Accuracy: 0.6871
 - Dev Set: Accuracy: 0.6993
-
 
 **Random Forest:**
 
