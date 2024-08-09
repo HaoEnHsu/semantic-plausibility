@@ -99,8 +99,8 @@ With separated animacy feature: fnn_2animacy.py
 
 With concatenated animacy feature: fnn_animacy.py
 
-- Dev data F1 Score: ; Accuracy: 0.7026 ; AUC-ROC score:
-- Test data F1 Score: ; Accuracy:  0.7068; AUC-ROC score:
+- Dev data F1 Score: 0.7299 (0.6066) ; Accuracy: 0.7026 (0.5718) ; AUC-ROC score: 0.7817 (0.6274)
+- Test data F1 Score: 0.7272 (0.6435) ; Accuracy:  0.7068 (0.6319); AUC-ROC score: 0.7796 (0.6821)
 
 Without animacy feature: fnn.py
 
