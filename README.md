@@ -2,7 +2,7 @@
 
 > :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 28-31)` and `RandomForest.py (Lines 115-118)` files to the appropriate paths/names on your local machine before running the program.`KNN`: follow the multistring instructions in knn.py to get the results for a desired model**
 
-#Unix/macOS: 
+###Unix/macOS: 
 
 Setting up the virtual environment:
 
@@ -20,9 +20,9 @@ source msp/bin/activate
 
 `pip install -r requirements.txt`
 
-#For Windows:
+###For Windows:
 
-### Clone the Repository
+Clone the Repository
 
 Go to terminal, enter the following commands and make sure that you choose a path to clone the repository to.
 
@@ -30,11 +30,11 @@ Go to terminal, enter the following commands and make sure that you choose a pat
 
 `cd C:/Users/User/Path`
 
-### Create a Virtual Environment:
+Create a Virtual Environment:
 
   On Windows: `.\venv\Scripts\activate`
 
-### Install Requirements:
+Install Requirements:
 
 `pip install -r requirements.txt`
 
