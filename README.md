@@ -94,18 +94,18 @@ Without animacy feature:
 
 With separated animacy feature: fnn_2animacy.py
 
-- Test Set: Accuracy: 0.6449
-- Dev Set: Accuracy: 0.6111
+- Dev data F1 Score: ; Accuracy: 0.6111 ; AUC-ROC score:
+- Test data F1 Score: ; Accuracy: 0.6449; AUC-ROC score:
 
 With concatenated animacy feature: fnn_animacy.py
 
-- Test Set: Accuracy: 0.7068
-- Dev Set: Accuracy: 0.7026
+- Dev data F1 Score: ; Accuracy: 0.7026 ; AUC-ROC score:
+- Test data F1 Score: ; Accuracy:  0.7068; AUC-ROC score:
 
 Without animacy feature: fnn.py
 
-- Test Set: Accuracy: 0.6871
-- Dev Set: Accuracy: 0.6993
+- Dev data F1 Score: 0.7160 (0.6544); Accuracy: 0.6993 (0.6307) ; AUC-ROC score: 0.7712 (0.6888)
+- Test data F1 Score: 0.6923 (0.6392); Accuracy: 0.6871 (0.6286); AUC-ROC score: 0.7456 (0.6913)
 
 **Random Forest:**
 
