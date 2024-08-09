@@ -33,7 +33,7 @@ class FNN(nn.Module):
         out = torch.sigmoid(out)
         return out
 
-    def train_model(self, train_loader, device, num_epochs, dev_loader):
+    def train_model(self, train_loader, device, num_epochs, dev_loader, patience=5):
         """
         Trains the neural network.
 
@@ -54,6 +54,8 @@ class FNN(nn.Module):
 
         loss_history = []  # To store the loss at each epoch
         val_loss_history = []
+        best_val_loss = float('inf')
+        epochs_without_improvement = 0
 
         for epoch in range(num_epochs):
             running_loss = 0.0
@@ -72,11 +74,24 @@ class FNN(nn.Module):
             val_loss, val_f1, val_accuracy, val_auc, _, _ = self.eval_model(dev_loader, device, dataset_name='Validation')
             val_loss_history.append(val_loss)
             print(f"Epoch {epoch + 1}/{num_epochs}")
+
+            # Early stopping check
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                epochs_without_improvement = 0
+                torch.save(self.state_dict(), 'best_model.pth')  # Save the best model
+            else:
+                epochs_without_improvement += 1
+                if epochs_without_improvement >= patience:
+                    print(f'Early stopping triggered after {epoch + 1} epochs.')
+                    break
+        # Load the best model
+        self.load_state_dict(torch.load('best_model.pth'))
         return loss_history, val_loss_history
 
     def predict(self, X_test_tensor, device):
         """
-        Makes predictions on the test data.
+        Makes predictions on the test/dev data.
 
         Args:
             X_test_tensor (torch.Tensor): Test data tensor.
@@ -288,8 +303,9 @@ plt.title('Training and Validation Loss Curve')
 plt.legend()
 plt.show()
 '''
-# Load model, uncomment these two lines to run already trained model
+# Load model, uncomment these two lines to run already trained model, choose whether to run augmented data model or original data model
 model.load_state_dict(torch.load('fnn_w_animacy_model.pth'))
+#model.load_state_dict(torch.load('fnn_model_animacy_aug.pth'))
 model.to(device)
 
 # Evaluate the model
