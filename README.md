@@ -2,29 +2,35 @@
 
 > :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 28-31)` and `RandomForest.py (Lines 115-118)` files to the appropriate paths/names on your local machine before running the program.`KNN`: follow the multistring instructions in knn.py to get the results for a desired model**
 
-Unix/macOS: 
+###Unix/macOS: 
 
+Setting up the virtual environment:
 
+⁠Go to the local directory of your choice in Terminal
+
+Clone our repository by running 'git clone https://github.com/HaoEnHsu/semantic-plausibility'
+
+Go to the folder with downloaded files, it will be called ‘semantic-plausibility’ ('cd semantic-plausibility' for Mac, and 'cd .\semantic-plausibility' for Windows)
+
+⁠Run the following commands:
+
+python3 -m venv msp
+
+source msp/bin/activate 
+
+`pip install -r requirements.txt`
+
+###For Windows:
 
 ### Clone the Repository
 
 Go to terminal, enter the following commands and make sure that you choose a path to clone the repository to.
-
-Unix/macOS:
-
-`git clone https://github.com/HaoEnHsu/semantic-plausibility ~/Path`
-
-`cd ~/Path`
-
-On Windows:
 
 `git clone https://github.com/HaoEnHsu/semantic-plausibility C:/Users/User/Path`
 
 `cd C:/Users/User/Path`
 
 ### Create a Virtual Environment:
-
-  Unix/macOS: `source venv/bin/activate`
 
   On Windows: `.\venv\Scripts\activate`
 
