@@ -32,7 +32,7 @@ class FNN(nn.Module):
         out = torch.sigmoid(out)
         return out
 
-    def train_model(self, train_loader, device, num_epochs, dev_loader):
+    def train_model(self, train_loader, device, num_epochs, dev_loader, patience=5):
         """
         Trains the neural network.
 
@@ -53,6 +53,8 @@ class FNN(nn.Module):
 
         loss_history = []  # To store the loss at each epoch
         val_loss_history = []
+        best_val_loss = float('inf')
+        epochs_without_improvement = 0
 
         for epoch in range(num_epochs):
             running_loss = 0.0
@@ -71,6 +73,18 @@ class FNN(nn.Module):
             val_loss, val_f1, val_accuracy, val_auc, _, _ = self.eval_model(dev_loader, device, dataset_name='Validation')
             val_loss_history.append(val_loss)
             print(f"Epoch {epoch + 1}/{num_epochs}")
+            # Early stopping check
+            if val_loss < best_val_loss:
+                best_val_loss = val_loss
+                epochs_without_improvement = 0
+                torch.save(self.state_dict(), 'best_model.pth')  # Save the best model
+            else:
+                epochs_without_improvement += 1
+                if epochs_without_improvement >= patience:
+                    print(f'Early stopping triggered after {epoch + 1} epochs.')
+                    break
+        # Load the best model
+        self.load_state_dict(torch.load('best_model.pth'))
         return loss_history, val_loss_history
 
     def predict(self, X_test_tensor, device):
@@ -272,7 +286,7 @@ test_loader = DataLoader(test_dataset, batch_size=16, shuffle=False)
 model = FNN()
 '''
 loss_history, val_loss_history = model.train_model(train_loader, device, num_epochs=1250, dev_loader=dev_loader)
-torch.save(model.state_dict(), 'fnn_model_animacy2.pth')
+torch.save(model.state_dict(), 'fnn_model_animacy2_aug.pth')
 
 # Plot the loss curve
 plt.plot(range(1, len(loss_history) + 1), loss_history, label='Training Loss')
@@ -284,8 +298,9 @@ plt.legend()
 plt.show()
 '''
 
-# Load model, to train comment out these two lines
+# Load model, to train comment out these two lines, choose model trained on just original data or also on augmented data
 model.load_state_dict(torch.load('fnn_model_animacy1.pth'))
+#model.load_state_dict(torch.load('fnn_model_animacy2_aug.pth'))
 model.to(device)
 
 # Evaluate the model
