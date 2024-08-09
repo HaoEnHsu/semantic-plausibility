@@ -1,24 +1,30 @@
-## Project Setup
+# Project Setup
 
 > :warning: **IMPORTANT: Please adjust the file paths/file names in the `BERT.py (Lines 10-13)`, `kmeans.py (Lines 28-31)` and `RandomForest.py (Lines 115-118)` files to the appropriate paths/names on your local machine before running the program.`KNN`: follow the multistring instructions in knn.py to get the results for a desired model**
 
-Setting up the virtual environment:
+### Clone the Repository
 
-- ⁠Go to the local directory of your choice in Terminal
-- Clone our repository by running 'git clone https://github.com/HaoEnHsu/semantic-plausibility'
-- Go to the folder with downloaded files, it will be called ‘semantic-plausibility’ ('cd semantic-plausibility' for Mac, and 'cd .\semantic-plausibility' for Windows)
-- ⁠Run the following commands:
+Go to terminal, enter the following commands and make sure that you choose a path to clone the repository to.
 
-  python3 -m venv msp
-  
-  source msp/bin/activate (for Mac)
+`git clone https://github.com/HaoEnHsu/semantic-plausibility C:/Users/User/Path`
 
-  or ./msp/Scripts/activate (for Windows)
-  and
-  
-  pip install -r requirements.txt
+`cd C:/Users/User/Path`
+
+### Create a Virtual Environment:
+
+  Unix/macOS: `source venv/bin/activate`
+
+  On Windows: `.\venv\Scripts\activate`
+
+### Install Requirements:
+
+`pip install -r requirements.txt`
+
+The environment should be set up, simply open the files you would like to run to get started. Please see the rest of our README and our code comments inside the files on exactly how to run scripts for specific functions.
 
 - ⁠to run knn.py, for instance, stay in main folder's with all files directory and run the following command: python3 knn.py
+
+
 
 ## Python Version
 
