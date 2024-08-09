@@ -6,6 +6,14 @@
 
 Go to terminal, enter the following commands and make sure that you choose a path to clone the repository to.
 
+Unix/macOS:
+
+`git clone https://github.com/HaoEnHsu/semantic-plausibility ~/Path`
+
+`cd ~/Path`
+
+On Windows:
+
 `git clone https://github.com/HaoEnHsu/semantic-plausibility C:/Users/User/Path`
 
 `cd C:/Users/User/Path`
